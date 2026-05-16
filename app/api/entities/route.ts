@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
     const type = searchParams.get('type')
+    const search = searchParams.get('search')
     const skip = searchParams.get('skip') ? parseInt(searchParams.get('skip')!) : undefined
     const take = searchParams.get('take') ? parseInt(searchParams.get('take')!) : undefined
 
