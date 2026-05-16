@@ -14,19 +14,21 @@ export default function NewEntityPage() {
   const [tab, setTab] = useState<Tab>('upload')
   const [demoMode, setDemoMode] = useState(false)
   return (
-    <div className="p-8 max-w-2xl">
+    <div className="max-w-2xl p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="Add Entity"
         subtitle="Upload a pitch deck or add a mentor manually"
         action={<DemoModeToggle onChange={setDemoMode} />}
       />
-      <div className="flex gap-1 mb-6 bg-gray-100 rounded-lg p-1 w-fit">
+      <div className="flex gap-1 mb-8 bg-(--surface-muted) rounded-xl p-1.5 w-fit border border-(--border)">
         {(['upload', 'mentor'] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              tab === t ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'
+            className={`px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${
+              tab === t 
+                ? 'bg-(--surface-strong) shadow-sm text-foreground border border-(--border-strong)' 
+                : 'text-(--text-muted) hover:text-foreground'
             }`}
           >
             {t === 'upload' ? 'Upload Pitch Deck' : 'Add Mentor Manually'}
@@ -115,70 +117,78 @@ function UploadTab({ demoMode }: { demoMode: boolean }) {
 
   if (profile && editedProfile) {
     return (
-      <div className="space-y-4">
-        <p className="text-sm text-gray-500 mb-2">Review and edit the extracted profile before saving.</p>
-        {(['company_name', 'industry', 'problem', 'solution', 'geography', 'revenue_model'] as (keyof StartupProfile)[]).map((field) => (
-          <div key={field}>
-            <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">{field.replace('_', ' ')}</label>
-            <input
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
-              value={editedProfile[field] as string}
-              onChange={(e) => setEditedProfile({ ...editedProfile, [field]: e.target.value })}
-            />
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <p className="text-sm text-(--text-muted) mb-4 font-medium">Review and edit the extracted profile before saving to the institutional memory.</p>
+        <div className="app-panel rounded-4xl p-8 space-y-5 border border-(--border-strong)">
+          {(['company_name', 'industry', 'problem', 'solution', 'geography', 'revenue_model'] as (keyof StartupProfile)[]).map((field) => (
+            <div key={field}>
+              <label className="block text-[10px] font-bold text-(--teal-strong) mb-1.5 uppercase tracking-[0.2em] ml-1">{field.replace('_', ' ')}</label>
+              <input
+                className="w-full bg-(--surface-muted) border border-(--border) rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-(--teal-soft) transition-all"
+                value={editedProfile[field] as string}
+                onChange={(e) => setEditedProfile({ ...editedProfile, [field]: e.target.value })}
+              />
+            </div>
+          ))}
+          <div>
+            <label className="block text-[10px] font-bold text-(--teal-strong) mb-1.5 uppercase tracking-[0.2em] ml-1">Stage</label>
+            <select
+              className="w-full bg-(--surface-muted) border border-(--border) rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-(--teal-soft) transition-all"
+              value={editedProfile.stage}
+              onChange={(e) => setEditedProfile({ ...editedProfile, stage: e.target.value as StartupProfile['stage'] })}
+            >
+              {['idea', 'pre-seed', 'seed', 'series-a'].map((s) => <option key={s}>{s}</option>)}
+            </select>
           </div>
-        ))}
-        <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Stage</label>
-          <select
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A56DB] text-gray-900"
-            value={editedProfile.stage}
-            onChange={(e) => setEditedProfile({ ...editedProfile, stage: e.target.value as StartupProfile['stage'] })}
-          >
-            {['idea', 'pre-seed', 'seed', 'series-a'].map((s) => <option key={s} className="text-gray-900">{s}</option>)}
-          </select>
         </div>
-        {error && <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{error}</p>}
+        {error && <p className="text-sm text-red-500 bg-red-500/5 border border-red-500/20 p-4 rounded-xl font-medium">{error}</p>}
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full py-2.5 bg-[#1A56DB] text-white rounded-lg font-medium text-sm hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="w-full py-4 bg-(--teal) text-(--accent-foreground) rounded-2xl font-bold text-sm hover:opacity-90 disabled:opacity-50 shadow-(--teal-soft) transition-all"
         >
-          {saving ? 'Saving...' : 'Save Entity'}
+          {saving ? 'Saving to Ecosystem...' : 'Finalize Entity'}
         </button>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div
         onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
-        className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${
-          dragging ? 'border-[#1A56DB] bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+        className={`border-2 border-dashed rounded-[2.5rem] p-16 text-center cursor-pointer transition-all duration-300 relative overflow-hidden group ${
+          dragging 
+            ? 'border-(--teal) bg-(--teal-soft) scale-[0.99]' 
+            : 'border-(--border-strong) hover:border-(--teal) hover:bg-(--surface-muted)'
         }`}
       >
+        <div className="absolute inset-0 bg-linear-to-b from-transparent to-(--teal-soft) opacity-0 group-hover:opacity-20 transition-opacity" />
         <input ref={inputRef} type="file" accept="application/pdf" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-        <p className="text-4xl mb-3">📄</p>
-        <p className="text-sm font-medium text-gray-700">
-          {file ? file.name : 'Drop a PDF pitch deck here, or click to browse'}
+        <p className="text-5xl mb-6 group-hover:scale-110 transition-transform duration-300">📄</p>
+        <p className="text-base font-bold text-foreground">
+          {file ? file.name : 'Drop a PDF pitch deck here'}
         </p>
-        <p className="text-xs text-gray-400 mt-1">PDF only · max 10MB</p>
+        <p className="text-sm text-(--text-muted) mt-2 font-medium">
+          {file ? 'Click to change file' : 'or click to browse institutional files'}
+        </p>
+        <p className="text-[10px] text-(--text-muted) mt-6 uppercase tracking-widest font-bold opacity-50">PDF only · max 10MB</p>
       </div>
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-          <p className="text-sm text-red-700">{error}</p>
-          {rawError && <pre className="text-xs text-red-500 mt-2 overflow-auto">{rawError}</pre>}
+        <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-4">
+          <p className="text-sm text-red-500 font-semibold">{error}</p>
+          {rawError && <pre className="text-[10px] text-red-400 mt-3 p-3 bg-red-500/5 rounded-lg overflow-auto font-mono">{rawError}</pre>}
         </div>
       )}
       <button
         onClick={handleExtract}
-        disabled={!file}
-        className="w-full py-2.5 bg-[#1A56DB] text-white rounded-lg font-medium text-sm hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        disabled={file === null}
+        className="w-full py-4 bg-foreground text-background rounded-2xl font-bold text-sm hover:opacity-90 disabled:opacity-50 transition-all shadow-xl"
       >
-        Extract Profile
+        Extract Profile with Gemini
       </button>
     </div>
   )
@@ -227,34 +237,36 @@ function MentorTab() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {[
-        { key: 'name', label: 'Full Name', placeholder: 'Dr. Ahmad Razif' },
-        { key: 'bio', label: 'Bio', placeholder: 'Serial entrepreneur with 3 exits in B2B SaaS...' },
-        { key: 'expertise', label: 'Expertise (comma-separated)', placeholder: 'B2B SaaS, Enterprise Sales, Fundraising' },
-        { key: 'past_exits', label: 'Past Exits (number)', placeholder: '2', type: 'number' },
-        { key: 'industries', label: 'Industries (comma-separated)', placeholder: 'FinTech, SaaS' },
-        { key: 'geography', label: 'Geography', placeholder: 'Malaysia' },
-        { key: 'availability', label: 'Availability', placeholder: '4 hours/month' },
-      ].map(({ key, label, placeholder, type }) => (
-        <div key={key}>
-          <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">{label}</label>
-          <input
-            type={type || 'text'}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
-            placeholder={placeholder}
-            value={form[key as keyof typeof form]}
-            onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-          />
-        </div>
-      ))}
-      {error && <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{error}</p>}
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="app-panel rounded-[2.5rem] p-8 space-y-5 border border-(--border-strong)">
+        {[
+          { key: 'name', label: 'Full Name', placeholder: 'Dr. Ahmad Razif' },
+          { key: 'bio', label: 'Bio', placeholder: 'Serial entrepreneur with 3 exits in B2B SaaS...' },
+          { key: 'expertise', label: 'Expertise (comma-separated)', placeholder: 'B2B SaaS, Enterprise Sales, Fundraising' },
+          { key: 'past_exits', label: 'Past Exits (number)', placeholder: '2', type: 'number' },
+          { key: 'industries', label: 'Industries (comma-separated)', placeholder: 'FinTech, SaaS' },
+          { key: 'geography', label: 'Geography', placeholder: 'Malaysia' },
+          { key: 'availability', label: 'Availability', placeholder: '4 hours/month' },
+        ].map(({ key, label, placeholder, type }) => (
+          <div key={key}>
+            <label className="block text-[10px] font-bold text-(--teal-strong) mb-1.5 uppercase tracking-[0.2em] ml-1">{label}</label>
+            <input
+              type={type || 'text'}
+              className="w-full bg-(--surface-muted) border border-(--border) rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-(--teal-soft) transition-all"
+              placeholder={placeholder}
+              value={form[key as keyof typeof form]}
+              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+            />
+          </div>
+        ))}
+      </div>
+      {error && <p className="text-sm text-red-500 bg-red-500/5 border border-red-500/20 p-4 rounded-xl font-medium">{error}</p>}
       <button
         type="submit"
         disabled={saving || !form.name}
-        className="w-full py-2.5 bg-[#0E9F6E] text-white rounded-lg font-medium text-sm hover:bg-green-700 disabled:opacity-50 transition-colors"
+        className="w-full py-4 bg-(--teal) text-(--accent-foreground) rounded-2xl font-bold text-sm hover:opacity-90 disabled:opacity-50 shadow-(--teal-soft) transition-all"
       >
-        {saving ? 'Saving...' : 'Add Mentor'}
+        {saving ? 'Registering Mentor...' : 'Complete Mentor Registration'}
       </button>
     </form>
   )

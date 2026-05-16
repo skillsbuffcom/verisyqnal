@@ -31,6 +31,7 @@ export default function EntitiesPage() {
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState('')
+  const [search, setSearch] = useState('')
   const [page, setPage] = useState(0)
   const [total, setTotal] = useState(0)
   const PAGE_SIZE = 12
@@ -74,35 +75,54 @@ export default function EntitiesPage() {
     fetchEntities(true)
   }
 
+  const filteredEntities = entities.filter((e) => {
+    const s = search.toLowerCase()
+    return (
+      e.name.toLowerCase().includes(s) ||
+      e.tags.some((t) => t.toLowerCase().includes(s)) ||
+      (e.stage?.toLowerCase().includes(s) ?? false) ||
+      (e.geography?.toLowerCase().includes(s) ?? false)
+    )
+  })
+
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="Entities"
-        subtitle="Startups, mentors, partners, and programmes in your ecosystem"
+        subtitle="Startups, mentors, and partners in the ecosystem"
         action={
           <Link
             href="/entities/new"
-            className="px-4 py-2 bg-[#1A56DB] text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+            className="rounded-lg bg-(--teal) px-4 py-2 text-sm font-medium text-(--accent-foreground) hover:opacity-90 transition-opacity"
           >
             Add Entity
           </Link>
         }
       />
 
-      <div className="flex gap-2 mb-6">
+      <div className="mb-6 flex flex-wrap gap-2">
         {FILTERS.map((f) => (
           <button
             key={f.value}
             onClick={() => setFilter(f.value)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors select-none cursor-default ${
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
               filter === f.value
-                ? 'bg-[#1A56DB] text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-(--teal) text-(--accent-foreground)'
+                : 'border border-(--teal) text-(--teal-strong)'
             }`}
           >
             {f.label}
           </button>
         ))}
+      </div>
+
+      <div className="mb-6">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search name, tags, stage, or geography"
+          className="app-panel w-full rounded-[1.25rem] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-(--teal-soft) transition-all"
+        />
       </div>
 
       {loading && <LoadingSpinner label="Loading entities..." />}
@@ -111,7 +131,7 @@ export default function EntitiesPage() {
           title="Failed to load"
           description={error}
           action={
-            <button onClick={fetchEntities} className="text-sm text-[#1A56DB] underline">
+            <button onClick={() => fetchEntities()} className="text-sm font-semibold text-(--teal-strong) underline">
               Retry
             </button>
           }
@@ -120,31 +140,36 @@ export default function EntitiesPage() {
       {!loading && !error && entities.length === 0 && (
         <EmptyState
           title="No entities yet"
-          description="Add your first entity to get started."
+          description="Add your first startup or mentor."
           action={
-            <Link href="/entities/new" className="text-sm text-[#1A56DB] underline">
+            <Link href="/entities/new" className="text-sm font-semibold text-(--teal-strong) underline">
               Add Entity
             </Link>
           }
         />
       )}
-      {!loading && entities.length > 0 && (
+      
+      {!loading && !error && entities.length > 0 && filteredEntities.length === 0 && (
+        <EmptyState title="No matches found" description="Try adjusting your search criteria." />
+      )}
+
+      {!loading && filteredEntities.length > 0 && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {entities.map((e) => (
+            {filteredEntities.map((e) => (
               <EntityCard key={e.id} {...e} />
             ))}
           </div>
 
           {entities.length < total && (
             <div className="mt-12 flex flex-col items-center gap-4">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-(--text-muted) font-medium">
                 Showing {entities.length} of {total} entities
               </p>
               <button
                 onClick={handleLoadMore}
                 disabled={loadingMore}
-                className="px-8 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 transition-all"
+                className="px-8 py-3 bg-(--surface-strong) border border-(--border) rounded-xl text-sm font-semibold text-foreground shadow-sm hover:bg-(--surface-muted) hover:border-(--border-strong) disabled:opacity-50 transition-all"
               >
                 {loadingMore ? 'Loading...' : 'Load More Entities'}
               </button>

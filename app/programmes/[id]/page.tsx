@@ -178,7 +178,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <PageHeader
         title={programme?.name ?? 'Programme'}
         subtitle={programme?.cohort ?? undefined}
@@ -186,19 +186,21 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
       />
 
       {toast && (
-        <div className="fixed right-4 top-4 z-50 rounded-full bg-[var(--teal)] px-4 py-2 text-sm font-medium text-slate-950 shadow-lg">{toast}</div>
+        <div className="fixed right-4 top-20 z-50 rounded-full bg-(--teal) px-4 py-2 text-sm font-semibold text-(--accent-foreground) shadow-2xl lg:top-4 animate-in fade-in slide-in-from-top-4 duration-300">
+          {toast}
+        </div>
       )}
 
-      <div className="flex gap-6">
+      <div className="flex flex-col gap-6 lg:flex-row">
         {/* Left: Assigned Startups */}
-        <div className="w-72 shrink-0">
-          <div className="app-panel mb-4 rounded-[1.75rem] p-4">
-            <p className="mono text-xs uppercase tracking-[0.28em] text-[var(--teal-strong)]">Programme assignment</p>
-            <p className="app-muted mt-2 text-sm leading-6">Assign a startup before running relationship formation.</p>
+        <div className="w-full shrink-0 lg:w-72">
+          <div className="app-panel mb-6 rounded-4xl p-5">
+            <p className="mono text-[10px] uppercase tracking-[0.28em] text-(--teal-strong) font-bold">Programme assignment</p>
+            <p className="app-muted mt-2 text-xs leading-5">Assign a startup before running relationship formation.</p>
             <select
               value={assignTarget}
               onChange={(e) => setAssignTarget(e.target.value)}
-              className="mt-4 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-2 text-sm"
+              className="mt-4 w-full rounded-xl border border-(--border) bg-(--surface-muted) px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-(--teal-soft) transition-all"
             >
               <option value="">Select startup to assign</option>
               {allStartups
@@ -210,13 +212,13 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             <button
               onClick={handleAssignStartup}
               disabled={!assignTarget || assigning}
-              className="mt-3 w-full rounded-xl bg-[var(--foreground)] py-2.5 text-sm font-medium text-[var(--background)] disabled:opacity-50"
+              className="mt-3 w-full rounded-xl bg-foreground py-2.5 text-sm font-bold text-background disabled:opacity-50 hover:opacity-90 transition-opacity"
             >
               {assigning ? 'Assigning...' : 'Assign Startup'}
             </button>
           </div>
 
-          <h2 className="mono mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-[var(--text-muted)]">Assigned Startups</h2>
+          <h2 className="mono mb-3 text-[10px] font-bold uppercase tracking-[0.28em] text-(--text-muted) ml-2">Assigned Startups</h2>
           {assignedStartups.length === 0 ? (
             <EmptyState title="No startups assigned" description="Assign a startup to this programme to begin matching." />
           ) : (
@@ -225,7 +227,11 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                 <div
                   key={s.id}
                   onClick={() => { setSelected(s); setCandidates([]); setVeoResult(null); setApprovedRelationship(null) }}
-                  className={`cursor-pointer rounded-[1.75rem] border-2 transition-all ${selected?.id === s.id ? 'border-[var(--teal)] shadow-[0_0_0_4px_var(--teal-soft)]' : 'border-transparent'}`}
+                  className={`cursor-pointer rounded-[1.75rem] border-2 transition-all duration-300 ${
+                    selected?.id === s.id 
+                      ? 'border-(--teal) shadow-[0_0_0_4px_var(--teal-soft)] scale-[1.02]' 
+                      : 'border-transparent hover:border-(--border)'
+                  }`}
                 >
                   <EntityCard {...s} />
                 </div>
@@ -238,21 +244,26 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
         <div className="flex-1">
           {selected && (
             <>
-              <div className="mb-4">
+              <div className="mb-6">
                 <EntityCard {...selected} />
               </div>
-              <div className="app-panel mb-4 rounded-[1.75rem] p-4 py-3">
-                <p className="mono text-xs uppercase tracking-[0.28em] text-[var(--teal-strong)]">Relationship formation engine</p>
-                <div className="flex items-center justify-between gap-4 mt-1">
-                  <h2 className="text-xl font-semibold tracking-[-0.04em]">Find mentor matches</h2>
-                  <button
-                    onClick={handleMatch}
-                    disabled={matching}
-                    className="px-6 py-2 rounded-xl bg-[var(--teal)] text-sm font-semibold text-slate-950 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    {matching ? 'Matching...' : 'Find Matches'}
-                  </button>
-                </div>
+              <div className="app-panel mb-6 rounded-4xl p-8 border border-(--border-strong) relative overflow-hidden">
+                {/* Decorative background element */}
+                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-(--teal-soft) rounded-full blur-3xl opacity-20 pointer-events-none" />
+                
+                <p className="mono text-[10px] uppercase tracking-[0.28em] text-(--teal-strong) font-bold">Relationship formation engine</p>
+                <h2 className="mt-3 text-3xl font-semibold tracking-tighter">Find mentors with rationale and confidence.</h2>
+                <p className="app-muted mt-3 max-w-2xl text-sm leading-7">
+                  The strongest match should feel explainable, governable, and ready for institutional review. 
+                  Gemini will analyze mentor expertise against startup gaps.
+                </p>
+                <button
+                  onClick={handleMatch}
+                  disabled={matching}
+                  className="mt-6 w-full rounded-2xl bg-(--teal) py-4 text-sm font-bold text-(--accent-foreground) disabled:opacity-50 shadow-(--teal-soft) hover:scale-[1.01] active:scale-[0.99] transition-all"
+                >
+                  {matching ? 'Gemini is analysing compatibility across all mentors...' : 'Find Mentor Matches'}
+                </button>
               </div>
             </>
           )}
@@ -262,7 +273,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           )}
 
           {candidates.length > 0 && (
-            <div className="space-y-3 mb-4">
+            <div className="space-y-4 mb-6">
               {candidates.map(({ candidate, state }, idx) => (
                 <MatchCandidateCard
                   key={candidate.mentor_id}
@@ -276,13 +287,13 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           )}
 
           {panelError && (
-            <div className="mb-4 rounded-[1.5rem] border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-100">
+            <div className="mb-6 rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-500 font-medium backdrop-blur-sm">
               {panelError}
             </div>
           )}
 
           {candidates.some(c => c.state === 'approved') && !veoLoading && !veoResult && (
-            <div className="mb-4 rounded-[1.5rem] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-400/20 dark:bg-amber-500/10 dark:text-amber-100">
+            <div className="mb-6 rounded-2xl border border-(--teal-strong)/20 bg-(--teal-soft) p-4 text-sm text-(--teal-strong) font-medium">
               Veo Match Briefing will be generated automatically
             </div>
           )}
@@ -290,7 +301,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           {veoLoading && <LoadingSpinner label="Generating Veo Match Briefing..." />}
 
           {veoResult && (
-            <div className="mt-4">
+            <div className="mt-6">
               <BriefingCard
                 type={veoResult.type}
                 videoUrl={veoResult.url}
@@ -300,9 +311,12 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           )}
 
           {approvedRelationship && (
-            <div className="app-panel mt-4 rounded-[1.75rem] p-4 bg-[#081513] max-w-2xl">
-              <p className="mono text-xs uppercase tracking-[0.28em] text-[var(--teal)] opacity-70">Relationship Object</p>
-              <pre className="mono mt-2 max-h-40 overflow-auto text-[10px] leading-5 text-[#c6fff6]">
+            <div className="app-panel mt-6 rounded-4xl p-6 border border-(--border-strong)">
+              <div className="flex items-center justify-between mb-4">
+                <p className="mono text-[10px] uppercase tracking-[0.28em] text-(--teal-strong) font-bold">Relationship Object</p>
+                <span className="text-[10px] font-mono text-(--text-muted) opacity-50 uppercase">{approvedRelationship.id}</span>
+              </div>
+              <pre className="mono mt-2 overflow-auto rounded-2xl bg-[#081513] p-5 text-[13px] leading-6 text-[#c6fff6] shadow-inner">
                 {JSON.stringify(approvedRelationship, null, 2)}
               </pre>
             </div>
@@ -313,7 +327,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
       {/* Active Relationships */}
       {relationships.length > 0 && (
         <div className="mt-8">
-          <h2 className="mono mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-[var(--text-muted)]">Active Relationships</h2>
+          <h2 className="mono mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-(--text-muted)">Active Relationships</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {relationships.map(r => (
               <RelationshipCard

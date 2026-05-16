@@ -68,44 +68,45 @@ export default function DashboardPage() {
   if (loading) return <div className="p-8"><LoadingSpinner label="Loading ecosystem data..." /></div>
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <PageHeader title="Dashboard" subtitle="Verisyqnal — Programmable Ecosystem Infrastructure" />
 
       <div className="mb-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <section className="app-panel rounded-[2rem] p-6">
-          <p className="mono text-xs uppercase tracking-[0.28em] text-[var(--teal-strong)]">Potential Signal</p>
-          <h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-[-0.05em]">
-            A control plane for ecosystem relationships, not another operations dashboard.
-          </h2>
-          <p className="app-muted mt-4 max-w-2xl text-sm leading-7">
-            This workspace is designed to prove that mentor matching, approval workflows, briefing generation, and
-            ecosystem memory can live in one structured system.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/demo" className="rounded-full bg-[var(--teal)] px-4 py-2 text-sm font-semibold text-slate-950">
-              Open Demo Narrative
-            </Link>
-            <Link href="/about-relationship-object" className="rounded-full border border-[var(--border-strong)] px-4 py-2 text-sm">
-              View Relationship Object
-            </Link>
+        <section className="col-span-full mb-4 lg:col-span-1 lg:mb-0">
+          <div className="app-panel metric-glow rounded-4xl p-8 border border-(--border-strong) relative overflow-hidden h-full">
+            <div className="absolute top-0 right-0 -mr-12 -mt-12 w-48 h-48 bg-(--teal-soft) rounded-full blur-3xl opacity-20 pointer-events-none" />
+            <p className="mono text-[10px] uppercase tracking-[0.28em] text-(--teal-strong) font-bold">Ecosystem Control</p>
+            <h1 className="mt-4 text-5xl font-semibold tracking-tighter leading-[1.1]">Relationship Objects</h1>
+            <p className="app-muted mt-5 text-sm leading-7 max-w-sm">
+              Your ecosystem is now programmable. Every match, every mentor, and every 
+              ecosystem memory can live in one structured system.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/demo" className="rounded-full bg-(--teal) px-6 py-2.5 text-sm font-bold text-(--accent-foreground) hover:opacity-90 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                Open Demo Narrative
+              </Link>
+              <Link href="/about-relationship-object" className="rounded-full border border-(--border-strong) px-6 py-2.5 text-sm font-semibold hover:bg-(--surface-muted) transition-colors">
+                View Relationship Object
+              </Link>
+            </div>
           </div>
         </section>
 
-        <section className="app-panel rounded-[2rem] p-5">
-          <p className="mono text-xs uppercase tracking-[0.28em] text-[var(--teal-strong)]">Pitch Flow</p>
-          <div className="mt-4 space-y-3">
+        <section className="app-panel rounded-4xl p-6">
+          <p className="mono text-[10px] uppercase tracking-[0.28em] text-(--teal-strong) font-bold">Pitch Flow</p>
+          <div className="mt-5 space-y-3">
             {demoFlow.map(({ label, href, icon: Icon }, index) => (
-              <Link key={label} href={href} className="flex items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <span className="rounded-xl bg-[var(--teal-soft)] p-2 text-[var(--teal-strong)]">
-                    <Icon size={16} />
+              <Link key={label} href={href} className="flex items-center justify-between rounded-4xl border border-(--border) bg-(--surface-muted) px-5 py-3.5 hover:border-(--teal) transition-all group">
+                <div className="flex items-center gap-4">
+                  <span className="rounded-xl bg-(--teal-soft) p-2.5 text-(--teal-strong) group-hover:scale-110 transition-transform">
+                    <Icon size={18} />
                   </span>
                   <div>
-                    <p className="mono text-[11px] uppercase tracking-[0.24em] text-[var(--text-muted)]">Step 0{index + 1}</p>
-                    <p className="text-sm font-medium">{label}</p>
+                    <p className="mono text-[10px] uppercase tracking-[0.24em] text-(--text-muted) font-bold">Step 0{index + 1}</p>
+                    <p className="text-sm font-semibold text-foreground">{label}</p>
                   </div>
                 </div>
-                <ArrowRight size={16} className="text-[var(--text-muted)]" />
+                <ArrowRight size={18} className="text-(--text-muted) group-hover:translate-x-1 transition-transform" />
               </Link>
             ))}
           </div>
@@ -114,17 +115,17 @@ export default function DashboardPage() {
 
       <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {statCards.map(({ label, value }) => (
-          <div key={label} className="app-panel metric-glow rounded-[1.75rem] p-5">
-            <p className="mono text-3xl font-semibold text-[var(--foreground)]">{value}</p>
-            <p className="app-muted mt-2 text-sm font-medium">{label}</p>
+          <div key={label} className="app-panel metric-glow rounded-4xl p-6 border-b-4 border-b-(--teal-soft)">
+            <p className="mono text-4xl font-bold text-foreground tracking-tight">{value}</p>
+            <p className="app-muted mt-2 text-xs font-bold uppercase tracking-widest opacity-60 text-(--text-muted)">{label}</p>
           </div>
         ))}
       </div>
 
       {recent.length > 0 && (
         <div className="mb-8">
-          <h2 className="mono mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-[var(--text-muted)]">Recent Relationships</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <h2 className="mono mb-4 text-[10px] font-bold uppercase tracking-[0.28em] text-(--text-muted) ml-2">Recent Relationships</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {recent.map(r => (
               <RelationshipCard
                 key={r.id}
@@ -144,10 +145,10 @@ export default function DashboardPage() {
 
       <Link
         href="/graph"
-        className="flex w-full items-center justify-center gap-2 rounded-[1.75rem] bg-[var(--foreground)] py-4 text-lg font-semibold text-[var(--background)]"
+        className="flex w-full items-center justify-center gap-3 rounded-4xl bg-(--teal) py-5 text-lg font-bold text-(--accent-foreground) hover:opacity-90 transition-all hover:scale-[1.005] active:scale-[0.995]"
       >
         View Ecosystem Graph
-        <ArrowRight size={18} />
+        <ArrowRight size={20} />
       </Link>
     </div>
   )
