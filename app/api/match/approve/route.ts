@@ -17,6 +17,19 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const data = approveSchema.parse(body)
 
+    const existing = await prisma.relationship.findFirst({
+      where: {
+        entityAId: data.startup_id,
+        entityBId: data.mentor_id,
+        programmeId: data.programme_id,
+        type: 'mentor_startup',
+      },
+    })
+
+    if (existing) {
+      return NextResponse.json({ success: true, relationship: existing, duplicate: true }, { status: 200 })
+    }
+
     const relationship = await prisma.relationship.create({
       data: {
         entityAId: data.startup_id,
@@ -34,7 +47,12 @@ export async function POST(req: NextRequest) {
           approved_at: new Date().toISOString(),
           can_modify: ['admin', 'programme_owner'],
         },
-        memory: [],
+        memory: [{
+          timestamp: new Date().toISOString(),
+          event: 'match_approved',
+          actor: 'admin',
+          notes: data.rationale,
+        }],
       },
     })
 

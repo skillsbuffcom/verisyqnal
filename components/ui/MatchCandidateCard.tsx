@@ -11,33 +11,33 @@ interface MatchCandidateCardProps {
 
 export function MatchCandidateCard({ candidate, state = 'default', onApprove, onReject }: MatchCandidateCardProps) {
   const confidenceColor =
-    candidate.confidence >= 75 ? 'text-green-600' : candidate.confidence >= 50 ? 'text-amber-500' : 'text-red-500'
+    candidate.confidence >= 75 ? 'text-[var(--teal-strong)]' : candidate.confidence >= 50 ? 'text-amber-500' : 'text-red-500'
 
   return (
     <div
-      className={`bg-white border rounded-xl p-4 shadow-sm transition-all ${
-        state === 'approved' ? 'border-green-400 bg-green-50' :
-        state === 'rejected' ? 'border-gray-200 bg-gray-50 opacity-60' :
-        'border-gray-200'
+      className={`rounded-[1.75rem] border p-5 transition-all ${
+        state === 'approved' ? 'border-[var(--teal)] bg-[var(--teal-soft)]' :
+        state === 'rejected' ? 'border-[var(--border)] bg-[var(--surface-muted)] opacity-60' :
+        'app-panel border-[var(--border)]'
       }`}
     >
-      <div className="flex items-start justify-between mb-2">
+      <div className="mb-3 flex items-start justify-between">
         <div>
-          <p className="font-semibold text-gray-900">{candidate.mentor_name}</p>
-          <p className="text-xs text-gray-500">{candidate.mentor_profile.geography}</p>
+          <p className="text-lg font-semibold text-[var(--foreground)]">{candidate.mentor_name}</p>
+          <p className="app-muted text-xs">{candidate.mentor_profile.geography}</p>
         </div>
         <div className={`text-2xl font-bold ${confidenceColor}`}>
           {candidate.confidence}
-          <span className="text-xs font-normal text-gray-400 ml-0.5">%</span>
+          <span className="ml-0.5 text-xs font-normal text-[var(--text-muted)]">%</span>
         </div>
       </div>
 
-      <p className="text-sm text-gray-600 mb-3">{candidate.rationale}</p>
+      <p className="app-muted mb-4 text-sm leading-7">{candidate.rationale}</p>
 
       {candidate.alignment_factors.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-2">
+        <div className="mb-3 flex flex-wrap gap-1">
           {candidate.alignment_factors.map((f) => (
-            <span key={f} className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full">{f}</span>
+            <span key={f} className="rounded-full bg-[var(--teal-soft)] px-2.5 py-1 text-xs text-[var(--teal-strong)]">{f}</span>
           ))}
         </div>
       )}
@@ -45,7 +45,7 @@ export function MatchCandidateCard({ candidate, state = 'default', onApprove, on
       {candidate.risk_flags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
           {candidate.risk_flags.map((r) => (
-            <span key={r} className="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full">{r}</span>
+            <span key={r} className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs text-red-500">{r}</span>
           ))}
         </div>
       )}
@@ -54,13 +54,13 @@ export function MatchCandidateCard({ candidate, state = 'default', onApprove, on
         <div className="flex gap-2 mt-3">
           <button
             onClick={onApprove}
-            className="flex-1 py-2 rounded-lg bg-[#0E9F6E] text-white text-sm font-medium hover:bg-green-700 transition-colors"
+            className="flex-1 rounded-xl bg-[var(--teal)] py-2.5 text-sm font-semibold text-slate-950"
           >
             Approve
           </button>
           <button
             onClick={onReject}
-            className="flex-1 py-2 rounded-lg bg-[#E02424] text-white text-sm font-medium hover:bg-red-700 transition-colors"
+            className="flex-1 rounded-xl border border-[var(--border-strong)] py-2.5 text-sm font-medium text-[var(--foreground)]"
           >
             Reject
           </button>
@@ -68,10 +68,10 @@ export function MatchCandidateCard({ candidate, state = 'default', onApprove, on
       )}
 
       {state === 'approved' && (
-        <p className="text-sm text-green-700 font-medium text-center mt-2">✓ Matched</p>
+        <p className="mt-2 text-center text-sm font-medium text-[var(--teal-strong)]">Matched</p>
       )}
       {state === 'rejected' && (
-        <p className="text-sm text-gray-400 font-medium text-center mt-2">Rejected</p>
+        <p className="mt-2 text-center text-sm font-medium text-[var(--text-muted)]">Rejected</p>
       )}
     </div>
   )

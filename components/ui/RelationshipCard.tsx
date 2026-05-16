@@ -14,11 +14,11 @@ interface RelationshipCardProps {
 }
 
 function ConfidenceArc({ score }: { score: number }) {
-  const color = score >= 75 ? 'text-green-600' : score >= 50 ? 'text-amber-500' : 'text-red-500'
+  const color = score >= 75 ? 'text-[var(--teal-strong)]' : score >= 50 ? 'text-amber-500' : 'text-red-500'
   return (
-    <div className={`flex items-center gap-1 ${color} font-bold text-lg`}>
+    <div className={`flex items-center gap-1 ${color} text-lg font-bold`}>
       {score}
-      <span className="text-xs font-normal text-gray-500">/ 100</span>
+      <span className="text-xs font-normal text-[var(--text-muted)]">/ 100</span>
     </div>
   )
 }
@@ -36,26 +36,26 @@ export function RelationshipCard({
 }: RelationshipCardProps) {
   return (
     <div
-      className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+      className="app-panel app-ring cursor-pointer rounded-[1.5rem] p-4"
       onClick={onClick}
     >
-      <div className="flex items-start justify-between mb-2">
+      <div className="mb-2 flex items-start justify-between">
         <div>
-          <p className="font-semibold text-gray-900 text-sm">
+          <p className="text-sm font-semibold text-[var(--foreground)]">
             {entityAName} ↔ {entityBName}
           </p>
-          <p className="text-xs text-gray-500 mt-0.5">{type.replace('_', ' ')} · {formation.replace('_', ' ')}</p>
+          <p className="app-muted mt-0.5 text-xs">{type.replace('_', ' ')} · {formation.replace('_', ' ')}</p>
         </div>
         <div className="flex flex-col items-end gap-1">
           <StatusBadge status={status} />
           {confidence != null && <ConfidenceArc score={confidence} />}
         </div>
       </div>
-      {rationale && <p className="text-sm text-gray-600 mt-2 line-clamp-2">{rationale}</p>}
+      {rationale && <p className="app-muted mt-3 text-sm leading-6 line-clamp-3">{rationale}</p>}
       {alignmentFactors.length > 0 && (
-        <div className="flex flex-wrap gap-1 mt-2">
+        <div className="mt-3 flex flex-wrap gap-1">
           {alignmentFactors.map((f) => (
-            <span key={f} className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full">
+            <span key={f} className="rounded-full bg-[var(--teal-soft)] px-2 py-0.5 text-xs text-[var(--teal-strong)]">
               {f}
             </span>
           ))}

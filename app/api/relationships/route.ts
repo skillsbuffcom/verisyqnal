@@ -7,11 +7,13 @@ export async function GET(req: NextRequest) {
     const programme_id = searchParams.get('programme_id')
     const status = searchParams.get('status')
     const entity_id = searchParams.get('entity_id')
+    const type = searchParams.get('type')
 
     const relationships = await prisma.relationship.findMany({
       where: {
         ...(programme_id ? { programmeId: programme_id } : {}),
         ...(status ? { status } : {}),
+        ...(type ? { type } : {}),
         ...(entity_id ? { OR: [{ entityAId: entity_id }, { entityBId: entity_id }] } : {}),
       },
       include: { entityA: true, entityB: true },

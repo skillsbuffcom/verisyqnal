@@ -23,6 +23,7 @@ export default function ProgrammesPage() {
   const [programmes, setProgrammes] = useState<Programme[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState({ name: '', cohort: '', owner: '', geography: [] as string[], status: 'active' })
   const [saving, setSaving] = useState(false)
@@ -38,6 +39,13 @@ export default function ProgrammesPage() {
   }
 
   useEffect(() => { fetchProgrammes() }, [])
+
+  const filteredProgrammes = programmes.filter((programme) => {
+    const needle = search.trim().toLowerCase()
+    if (!needle) return true
+    return [programme.name, programme.cohort ?? '', programme.owner ?? '', programme.geography.join(' ')]
+      .some((value) => value.toLowerCase().includes(needle))
+  })
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault()
@@ -69,6 +77,15 @@ export default function ProgrammesPage() {
         }
       />
 
+      <div className="mb-6">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search programmes, cohorts, owners, or geographies"
+          className="app-panel w-full rounded-[1.25rem] px-4 py-3 text-sm"
+        />
+      </div>
+
       {loading && <LoadingSpinner label="Loading programmes..." />}
       {error && !loading && (
         <EmptyState title="Failed to load" description={error} action={<button onClick={fetchProgrammes} className="text-sm text-[#1A56DB] underline">Retry</button>} />
@@ -76,9 +93,12 @@ export default function ProgrammesPage() {
       {!loading && !error && programmes.length === 0 && (
         <EmptyState title="No programmes yet" description="Create your first programme." action={<button onClick={() => setShowModal(true)} className="text-sm text-[#1A56DB] underline">New Programme</button>} />
       )}
-      {!loading && programmes.length > 0 && (
+      {!loading && programmes.length > 0 && filteredProgrammes.length === 0 && (
+        <EmptyState title="No matching programmes" description="Try a different search term." />
+      )}
+      {!loading && filteredProgrammes.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {programmes.map((p) => (
+          {filteredProgrammes.map((p) => (
             <Link key={p.id} href={`/programmes/${p.id}`} className="block bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-2">
                 <h3 className="font-semibold text-gray-900">{p.name}</h3>

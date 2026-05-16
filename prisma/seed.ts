@@ -1,18 +1,40 @@
 import { PrismaClient } from '../lib/generated/prisma/client'
+import { nanoid } from 'nanoid'
 
 const prisma = new PrismaClient()
 
 async function main() {
   console.log('🌱 Seeding Verisyqnal...')
 
+  await prisma.relationship.deleteMany()
+  await prisma.entity.deleteMany()
+  await prisma.programme.deleteMany()
+
   // Programme
+  const programmeId = nanoid()
   const programme = await prisma.programme.create({
     data: {
+      id: programmeId,
       name: 'MAGIC Accelerate Cohort 7',
       cohort: 'Cohort 7',
       owner: 'Cradle Fund',
       geography: ['Malaysia', 'Singapore'],
       status: 'active',
+    },
+  })
+  await prisma.entity.create({
+    data: {
+      id: programme.id,
+      type: 'programme',
+      name: programme.name,
+      profile: {
+        owner: programme.owner,
+        geography: programme.geography,
+        status: programme.status,
+        cohort: programme.cohort,
+      },
+      tags: ['accelerator', ...programme.geography],
+      geography: programme.geography[0] ?? null,
     },
   })
   console.log('✅ Programme:', programme.name)
@@ -154,14 +176,18 @@ async function main() {
   console.log('✅ Mentor-startup relationships:', relationships.length)
 
   // 5 startup_programme relationships
-  // entityBId uses self (startup) because Programme is not in the Entity table
   const progRels = await Promise.all(
     startups.map(s =>
       prisma.relationship.create({
         data: {
-          entityAId: s.id, entityBId: s.id, programmeId: programme.id,
+          entityAId: s.id, entityBId: programme.id, programmeId: programme.id,
           type: 'startup_programme', status: 'active', formation: 'admin_assigned',
-          alignmentFactors: [], riskFlags: [], memory: [],
+          alignmentFactors: [], riskFlags: [], memory: [{
+            timestamp: new Date().toISOString(),
+            event: 'startup_assigned_to_programme',
+            actor: 'admin',
+            notes: `${s.name} assigned to ${programme.name}`,
+          }],
         },
       })
     )

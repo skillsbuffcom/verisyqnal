@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import prisma from '@/lib/db'
+import { buildDemoBriefing } from '@/lib/demo-data'
+import { isDemoModeRequest } from '@/lib/demo-mode'
+import type { StartupProfile } from '@/lib/types'
 
 const schema = z.object({ relationship_id: z.string() })
 
@@ -30,17 +33,15 @@ function buildTextBriefing(rel: {
   rationale: string | null
   alignmentFactors: string[]
 }, programmeName: string) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const startup = rel.entityA.profile as any
-  return {
-    mentor_name: rel.entityB.name,
-    programme: programmeName,
-    startup_name: rel.entityA.name,
-    startup_summary: startup?.problem ?? 'Building a solution in their domain.',
-    match_reason: rel.rationale ?? 'Strong alignment across expertise and stage.',
-    what_they_need: startup?.gaps?.[0] ?? 'Mentorship and strategic guidance.',
-    alignment_highlight: rel.alignmentFactors[0] ?? 'Domain expertise',
-  }
+  const startup = rel.entityA.profile as StartupProfile
+  return buildDemoBriefing({
+    mentorName: rel.entityB.name,
+    programmeName,
+    startupName: rel.entityA.name,
+    startupProfile: startup,
+    rationale: rel.rationale ?? 'Strong alignment across expertise and stage.',
+    alignmentFactors: rel.alignmentFactors,
+  })
 }
 
 export async function POST(req: NextRequest) {
@@ -58,6 +59,16 @@ export async function POST(req: NextRequest) {
       ? await prisma.programme.findUnique({ where: { id: rel.programmeId } })
       : null
     const programmeName = programme?.name ?? rel.programmeId ?? 'Programme'
+
+    if (isDemoModeRequest(req)) {
+      const briefing = buildTextBriefing(rel, programmeName)
+      await prisma.relationship.update({
+        where: { id: relationship_id },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: { memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], { timestamp: new Date().toISOString(), event: 'demo_briefing_generated', actor: 'system', notes: JSON.stringify(briefing) }] },
+      })
+      return NextResponse.json({ success: true, type: 'text_briefing', briefing, relationship_id, demo_mode: true })
+    }
 
     const veoEndpoint = process.env.VEO_API_ENDPOINT
     const veoKey = process.env.VEO_API_KEY

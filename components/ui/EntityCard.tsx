@@ -1,10 +1,10 @@
 import { EntityType } from '@/lib/types'
 
 const typeColors: Record<EntityType, string> = {
-  startup: 'bg-blue-100 text-blue-800',
-  mentor: 'bg-green-100 text-green-800',
-  partner: 'bg-purple-100 text-purple-800',
-  programme: 'bg-orange-100 text-orange-800',
+  startup: 'bg-[rgba(45,212,191,0.12)] text-[var(--teal-strong)]',
+  mentor: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-200',
+  partner: 'bg-violet-100 text-violet-800 dark:bg-violet-500/15 dark:text-violet-200',
+  programme: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-200',
 }
 
 interface EntityCardProps {
@@ -20,28 +20,28 @@ interface EntityCardProps {
 export function EntityCard({ type, name, tags = [], geography, stage, onClick }: EntityCardProps) {
   return (
     <div
-      className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+      className="app-panel app-ring cursor-pointer rounded-[1.5rem] p-4"
       onClick={onClick}
     >
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <span className={`text-xs font-semibold px-2 py-0.5 rounded ${typeColors[type]}`}>
+      <div className="mb-3 flex items-start justify-between gap-2">
+        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${typeColors[type]}`}>
           {type}
         </span>
         {stage && (
-          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">{stage}</span>
+          <span className="rounded-full border border-[var(--border)] px-2.5 py-1 text-xs text-[var(--text-muted)]">{stage}</span>
         )}
       </div>
-      <h3 className="font-semibold text-gray-900 mb-1 truncate">{name}</h3>
-      {geography && <p className="text-xs text-gray-500 mb-2">{geography}</p>}
+      <h3 className="mb-1 truncate text-lg font-semibold text-[var(--foreground)]">{name}</h3>
+      {geography && <p className="app-muted mb-3 text-xs">{geography}</p>}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {tags.slice(0, 4).map((tag) => (
-            <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+            <span key={tag} className="rounded-full bg-[var(--surface-muted)] px-2 py-0.5 text-xs text-[var(--text-muted)]">
               {tag}
             </span>
           ))}
           {tags.length > 4 && (
-            <span className="text-xs text-gray-400">+{tags.length - 4}</span>
+            <span className="text-xs text-[var(--text-muted)]">+{tags.length - 4}</span>
           )}
         </div>
       )}

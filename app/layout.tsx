@@ -1,9 +1,17 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import { Sidebar } from '@/components/ui/Sidebar'
+import { AppShell } from '@/components/ui/AppShell'
 
-const inter = Inter({ subsets: ['latin'] })
+const geistSans = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist-sans',
+})
+
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
+})
 
 export const metadata: Metadata = {
   title: 'Verisyqnal',
@@ -13,11 +21,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} h-full bg-gray-50`}>
-        <div className="flex h-full">
-          <Sidebar />
-          <main className="flex-1 overflow-auto">{children}</main>
-        </div>
+      <body className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   )

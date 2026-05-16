@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { geminiFlash } from '@/lib/gemini'
+import { buildDemoMatches } from '@/lib/demo-data'
+import { isDemoModeRequest } from '@/lib/demo-mode'
 import prisma from '@/lib/db'
-import { MatchCandidate } from '@/lib/types'
+import { MatchCandidate, StartupProfile } from '@/lib/types'
 
 const matchSchema = z.object({
   startup_id: z.string(),
@@ -30,11 +32,17 @@ export async function POST(req: NextRequest) {
     const programme = await prisma.programme.findUnique({ where: { id: programme_id } })
 
     const mentors = await prisma.entity.findMany({ where: { type: 'mentor' } })
+    const startupProfile = startup.profile as unknown as StartupProfile
+
+    if (isDemoModeRequest(req)) {
+      const matches = buildDemoMatches(startupProfile, mentors, top_k)
+      return NextResponse.json({ success: true, startup_id, programme_id, matches, demo_mode: true })
+    }
 
     const assessments = await Promise.all(
       mentors.map(async (mentor) => {
         try {
-          const userMessage = `Startup Profile: ${JSON.stringify(startup.profile)} | Mentor Profile: ${JSON.stringify(mentor.profile)} | Programme: ${programme?.name ?? programme_id}`
+          const userMessage = `Startup Profile: ${JSON.stringify(startupProfile)} | Mentor Profile: ${JSON.stringify(mentor.profile)} | Programme Context: ${programme?.name ?? programme_id}, Geography: ${(programme?.geography ?? []).join(', ') || 'N/A'}, Rules: ${JSON.stringify(programme?.rules ?? {})}`
           const result = await geminiFlash.generateContent([
             { text: SYSTEM_PROMPT },
             { text: userMessage },
@@ -60,6 +68,11 @@ export async function POST(req: NextRequest) {
       .filter((a): a is MatchCandidate => a !== null)
       .sort((a, b) => b.confidence - a.confidence)
       .slice(0, top_k)
+
+    if (valid.length === 0) {
+      const matches = buildDemoMatches(startupProfile, mentors, top_k)
+      return NextResponse.json({ success: true, startup_id, programme_id, matches, fallback: 'deterministic' })
+    }
 
     return NextResponse.json({ success: true, startup_id, programme_id, matches: valid })
   } catch (err) {

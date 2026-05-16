@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { geminiFlash } from '@/lib/gemini'
-import prisma from '@/lib/db'
+import { getDemoStartupProfile } from '@/lib/demo-data'
+import { isDemoModeRequest } from '@/lib/demo-mode'
 
 const SYSTEM_PROMPT = `You are an ecosystem intelligence engine for an innovation programme platform.
 Extract the following and return ONLY valid JSON, no preamble, no markdown:
@@ -18,8 +19,9 @@ export async function POST(req: NextRequest) {
     if (!file) return NextResponse.json({ success: false, error: 'Missing file' }, { status: 400 })
     if (file.size > 10 * 1024 * 1024) return NextResponse.json({ success: false, error: 'File too large' }, { status: 413 })
 
-    const name = formData.get('name') as string | null
-    const type = formData.get('type') as string | null
+    if (isDemoModeRequest(req)) {
+      return NextResponse.json({ success: true, extracted_profile: getDemoStartupProfile(file.name) }, { status: 200 })
+    }
 
     const arrayBuffer = await file.arrayBuffer()
     const base64 = Buffer.from(arrayBuffer).toString('base64')
@@ -39,18 +41,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Extraction failed', raw }, { status: 422 })
     }
 
-    const entity = await prisma.entity.create({
-      data: {
-        type: type || 'startup',
-        name: name || extracted.company_name || 'Unknown',
-        profile: extracted,
-        tags: extracted.tags ?? [],
-        geography: extracted.geography ?? null,
-        stage: extracted.stage ?? null,
-      },
-    })
-
-    return NextResponse.json({ success: true, entity, extracted_profile: extracted }, { status: 201 })
+    return NextResponse.json({ success: true, extracted_profile: extracted }, { status: 200 })
   } catch (err) {
     return NextResponse.json({ success: false, error: String(err) }, { status: 500 })
   }

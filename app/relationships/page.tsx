@@ -32,6 +32,7 @@ export default function RelationshipsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState('')
+  const [search, setSearch] = useState('')
 
   const fetchRelationships = useCallback(async () => {
     setLoading(true)
@@ -47,7 +48,14 @@ export default function RelationshipsPage() {
 
   useEffect(() => { fetchRelationships() }, [fetchRelationships])
 
-  const mentorRels = relationships.filter(r => r.type === 'mentor_startup')
+  const mentorRels = relationships
+    .filter(r => r.type === 'mentor_startup')
+    .filter((relationship) => {
+      const needle = search.trim().toLowerCase()
+      if (!needle) return true
+      return [relationship.entityA.name, relationship.entityB.name, relationship.rationale ?? '', relationship.formation]
+        .some((value) => value.toLowerCase().includes(needle))
+    })
 
   return (
     <div className="p-8">
@@ -63,6 +71,15 @@ export default function RelationshipsPage() {
             {f.label}
           </button>
         ))}
+      </div>
+
+      <div className="mb-6">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search startups, mentors, or rationale"
+          className="app-panel w-full rounded-[1.25rem] px-4 py-3 text-sm"
+        />
       </div>
 
       {loading && <LoadingSpinner label="Loading relationships..." />}

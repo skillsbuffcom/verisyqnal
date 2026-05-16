@@ -4,15 +4,22 @@ import { useState, useRef, DragEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { DemoModeToggle } from '@/components/ui/DemoModeToggle'
+import { DEMO_MODE_HEADER } from '@/lib/demo-mode'
 import { StartupProfile } from '@/lib/types'
 
 type Tab = 'upload' | 'mentor'
 
 export default function NewEntityPage() {
   const [tab, setTab] = useState<Tab>('upload')
+  const [demoMode, setDemoMode] = useState(false)
   return (
     <div className="p-8 max-w-2xl">
-      <PageHeader title="Add Entity" subtitle="Upload a pitch deck or add a mentor manually" />
+      <PageHeader
+        title="Add Entity"
+        subtitle="Upload a pitch deck or add a mentor manually"
+        action={<DemoModeToggle onChange={setDemoMode} />}
+      />
       <div className="flex gap-1 mb-6 bg-gray-100 rounded-lg p-1 w-fit">
         {(['upload', 'mentor'] as Tab[]).map((t) => (
           <button
@@ -26,12 +33,12 @@ export default function NewEntityPage() {
           </button>
         ))}
       </div>
-      {tab === 'upload' ? <UploadTab /> : <MentorTab />}
+      {tab === 'upload' ? <UploadTab demoMode={demoMode} /> : <MentorTab />}
     </div>
   )
 }
 
-function UploadTab() {
+function UploadTab({ demoMode }: { demoMode: boolean }) {
   const [file, setFile] = useState<File | null>(null)
   const [dragging, setDragging] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -58,7 +65,11 @@ function UploadTab() {
     const fd = new FormData()
     fd.append('file', file)
     try {
-      const res = await fetch('/api/entities/ingest', { method: 'POST', body: fd })
+      const res = await fetch('/api/entities/ingest', {
+        method: 'POST',
+        body: fd,
+        headers: demoMode ? { [DEMO_MODE_HEADER]: '1' } : undefined,
+      })
       const data = await res.json()
       if (data.success) {
         setProfile(data.extracted_profile)
