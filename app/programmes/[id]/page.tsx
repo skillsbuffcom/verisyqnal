@@ -241,19 +241,18 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
               <div className="mb-4">
                 <EntityCard {...selected} />
               </div>
-              <div className="app-panel mb-4 rounded-[1.75rem] p-4">
+              <div className="app-panel mb-4 rounded-[1.75rem] p-4 py-3">
                 <p className="mono text-xs uppercase tracking-[0.28em] text-[var(--teal-strong)]">Relationship formation engine</p>
-                <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em]">Find mentors with rationale and confidence.</h2>
-                <p className="app-muted mt-2 text-sm leading-7">
-                  The strongest match should feel explainable, governable, and ready for institutional review.
-                </p>
-                <button
-                  onClick={handleMatch}
-                  disabled={matching}
-                  className="mt-4 w-full rounded-[1.25rem] bg-[var(--teal)] py-3 text-sm font-semibold text-slate-950 disabled:opacity-50"
-                >
-                  {matching ? 'Gemini is analysing compatibility across all mentors...' : 'Find Mentor Matches'}
-                </button>
+                <div className="flex items-center justify-between gap-4 mt-1">
+                  <h2 className="text-xl font-semibold tracking-[-0.04em]">Find mentor matches</h2>
+                  <button
+                    onClick={handleMatch}
+                    disabled={matching}
+                    className="px-6 py-2 rounded-xl bg-[var(--teal)] text-sm font-semibold text-slate-950 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    {matching ? 'Matching...' : 'Find Matches'}
+                  </button>
+                </div>
               </div>
             </>
           )}
@@ -301,9 +300,9 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           )}
 
           {approvedRelationship && (
-            <div className="app-panel mt-4 rounded-[1.75rem] p-4">
-              <p className="mono text-xs uppercase tracking-[0.28em] text-[var(--teal-strong)]">Relationship Object</p>
-              <pre className="mono mt-3 overflow-auto rounded-[1.25rem] bg-[#081513] p-4 text-xs leading-6 text-[#c6fff6]">
+            <div className="app-panel mt-4 rounded-[1.75rem] p-4 bg-[#081513]">
+              <p className="mono text-xs uppercase tracking-[0.28em] text-[var(--teal)] opacity-70">Relationship Object</p>
+              <pre className="mono mt-2 max-h-40 overflow-auto text-[10px] leading-5 text-[#c6fff6]">
                 {JSON.stringify(approvedRelationship, null, 2)}
               </pre>
             </div>
