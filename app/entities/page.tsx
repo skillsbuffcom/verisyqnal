@@ -28,29 +28,51 @@ const FILTERS: { label: string; value: string }[] = [
 export default function EntitiesPage() {
   const [entities, setEntities] = useState<Entity[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState('')
+  const [page, setPage] = useState(0)
+  const [total, setTotal] = useState(0)
+  const PAGE_SIZE = 12
 
-  const fetchEntities = useCallback(async () => {
+  const fetchEntities = useCallback(async (isLoadMore = false) => {
     try {
-      const url = filter ? `/api/entities?type=${filter}` : '/api/entities'
+      const skip = isLoadMore ? (page + 1) * PAGE_SIZE : 0
+      const baseUrl = `/api/entities?take=${PAGE_SIZE}&skip=${skip}`
+      const url = filter ? `${baseUrl}&type=${filter}` : baseUrl
+      
       const res = await fetch(url)
       const data = await res.json()
-      if (data.success) setEntities(data.entities)
-      else setError(data.error)
+      
+      if (data.success) {
+        if (isLoadMore) {
+          setEntities(prev => [...prev, ...data.entities])
+          setPage(p => p + 1)
+        } else {
+          setEntities(data.entities)
+          setPage(0)
+        }
+        setTotal(data.total)
+      } else {
+        setError(data.error)
+      }
     } catch (e) {
       setError(String(e))
     } finally {
       setLoading(false)
+      setLoadingMore(false)
     }
-  }, [filter])
+  }, [filter, page])
 
   useEffect(() => {
     setLoading(true)
     fetchEntities()
-    const interval = setInterval(fetchEntities, 30000)
-    return () => clearInterval(interval)
-  }, [fetchEntities])
+  }, [filter]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleLoadMore = () => {
+    setLoadingMore(true)
+    fetchEntities(true)
+  }
 
   return (
     <div className="p-8">
@@ -107,11 +129,28 @@ export default function EntitiesPage() {
         />
       )}
       {!loading && entities.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {entities.map((e) => (
-            <EntityCard key={e.id} {...e} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {entities.map((e) => (
+              <EntityCard key={e.id} {...e} />
+            ))}
+          </div>
+
+          {entities.length < total && (
+            <div className="mt-12 flex flex-col items-center gap-4">
+              <p className="text-sm text-gray-500">
+                Showing {entities.length} of {total} entities
+              </p>
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="px-8 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 transition-all"
+              >
+                {loadingMore ? 'Loading...' : 'Load More Entities'}
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

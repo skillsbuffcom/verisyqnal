@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import ReactFlow, {
   Node, Edge, Background, Controls, MiniMap,
   useNodesState, useEdgesState, BackgroundVariant,
@@ -75,19 +75,6 @@ export default function GraphPage() {
   const [allEntities, setAllEntities] = useState<Entity[]>([])
   const [allRels, setAllRels] = useState<Relationship[]>([])
 
-  const applyFilter = useCallback((entities: Entity[], rels: Relationship[], progId: string) => {
-    if (!progId) {
-      const { nodes: n, edges: e } = buildLayout(entities, rels)
-      setNodes(n); setEdges(e)
-    } else {
-      const progRels = rels.filter(r => (r as unknown as { programmeId?: string }).programmeId === progId)
-      const ids = new Set(progRels.flatMap(r => [r.entityAId, r.entityBId]))
-      const filteredEntities = entities.filter(e => ids.has(e.id))
-      const { nodes: n, edges: e } = buildLayout(filteredEntities, progRels)
-      setNodes(n); setEdges(e)
-    }
-  }, [setNodes, setEdges])
-
   async function fetchAll() {
     setLoading(true)
     try {
@@ -96,26 +83,36 @@ export default function GraphPage() {
         fetch('/api/relationships').then(r => r.json()),
         fetch('/api/programmes').then(r => r.json()),
       ])
-      const entities: Entity[] = eRes.entities ?? []
-      const rels: Relationship[] = rRes.relationships ?? []
-      setAllEntities(entities); setAllRels(rels)
+      setAllEntities(eRes.entities ?? [])
+      setAllRels(rRes.relationships ?? [])
       setProgrammes(pRes.programmes ?? [])
-      applyFilter(entities, rels, filterProgramme)
     } finally { setLoading(false) }
   }
 
-  useEffect(() => { fetchAll() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchAll() }, [])
 
+  // Optimized: Memoize layout calculations
+  const { nodes: layoutNodes, edges: layoutEdges } = useMemo(() => {
+    if (!filterProgramme) {
+      return buildLayout(allEntities, allRels)
+    }
+    const progRels = allRels.filter(r => (r as unknown as { programmeId?: string }).programmeId === filterProgramme)
+    const ids = new Set(progRels.flatMap(r => [r.entityAId, r.entityBId]))
+    const filteredEntities = allEntities.filter(e => ids.has(e.id))
+    return buildLayout(filteredEntities, progRels)
+  }, [allEntities, allRels, filterProgramme])
+
+  // Sync ReactFlow state with memoized layout when data/filter changes
   useEffect(() => {
-    if (allEntities.length) applyFilter(allEntities, allRels, filterProgramme)
-  }, [filterProgramme, allEntities, allRels, applyFilter])
+    setNodes(layoutNodes)
+    setEdges(layoutEdges)
+  }, [layoutNodes, layoutEdges, setNodes, setEdges])
 
   return (
     <div className="flex h-full">
       <div className="flex-1 relative">
         {loading && <div className="absolute inset-0 z-10 bg-white flex items-center justify-center"><LoadingSpinner label="Loading ecosystem..." /></div>}
 
-        {/* Controls bar */}
         <div className="absolute top-4 left-4 z-10 flex gap-2">
           <select
             className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm shadow-sm"
@@ -125,12 +122,11 @@ export default function GraphPage() {
             <option value="">All Programmes</option>
             {programmes.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
-          <button onClick={fetchAll} className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm shadow-sm hover:bg-gray-50">
+          <button onClick={fetchAll} className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm shadow-sm hover:bg-gray-50 transition-colors">
             Refresh
           </button>
         </div>
 
-        {/* Legend */}
         <div className="absolute bottom-8 left-4 z-10 bg-white border border-gray-200 rounded-xl p-3 shadow-sm text-xs space-y-1">
           <p className="font-semibold text-gray-700 mb-1">Legend</p>
           {(Object.entries(NODE_COLORS) as [EntityType, string][]).map(([t, c]) => (
@@ -163,10 +159,9 @@ export default function GraphPage() {
         </ReactFlow>
       </div>
 
-      {/* Side panel */}
       {(selectedEntity || selectedRel) && (
         <div className="w-80 shrink-0 border-l border-gray-200 bg-white p-4 overflow-auto">
-          <button onClick={() => { setSelectedEntity(null); setSelectedRel(null) }} className="text-xs text-gray-400 mb-3 hover:text-gray-600">✕ Close</button>
+          <button onClick={() => { setSelectedEntity(null); setSelectedRel(null) }} className="text-xs text-gray-400 mb-3 hover:text-gray-600 transition-colors">✕ Close</button>
           {selectedEntity && <EntityCard {...selectedEntity} />}
           {selectedRel && (
             <RelationshipCard

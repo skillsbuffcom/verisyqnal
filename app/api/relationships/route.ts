@@ -8,6 +8,8 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get('status')
     const entity_id = searchParams.get('entity_id')
     const type = searchParams.get('type')
+    const skip = searchParams.get('skip') ? parseInt(searchParams.get('skip')!) : undefined
+    const take = searchParams.get('take') ? parseInt(searchParams.get('take')!) : (searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined)
 
     const relationships = await prisma.relationship.findMany({
       where: {
@@ -18,9 +20,20 @@ export async function GET(req: NextRequest) {
       },
       include: { entityA: true, entityB: true },
       orderBy: { createdAt: 'desc' },
+      skip,
+      take,
     })
 
-    return NextResponse.json({ success: true, relationships })
+    const total = await prisma.relationship.count({
+      where: {
+        ...(programme_id ? { programmeId: programme_id } : {}),
+        ...(status ? { status } : {}),
+        ...(type ? { type } : {}),
+        ...(entity_id ? { OR: [{ entityAId: entity_id }, { entityBId: entity_id }] } : {}),
+      },
+    })
+
+    return NextResponse.json({ success: true, relationships, total })
   } catch (err) {
     return NextResponse.json({ success: false, error: String(err) }, { status: 500 })
   }

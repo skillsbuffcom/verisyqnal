@@ -30,32 +30,59 @@ const STATUS_FILTERS = [
 export default function RelationshipsPage() {
   const [relationships, setRelationships] = useState<Relationship[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState('')
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(0)
+  const [total, setTotal] = useState(0)
+  const PAGE_SIZE = 12
 
-  const fetchRelationships = useCallback(async () => {
-    setLoading(true)
+  const fetchRelationships = useCallback(async (isLoadMore = false) => {
     try {
-      const url = statusFilter ? `/api/relationships?status=${statusFilter}` : '/api/relationships'
+      const skip = isLoadMore ? (page + 1) * PAGE_SIZE : 0
+      const baseUrl = `/api/relationships?type=mentor_startup&take=${PAGE_SIZE}&skip=${skip}`
+      const url = statusFilter ? `${baseUrl}&status=${statusFilter}` : baseUrl
+      
       const res = await fetch(url)
       const data = await res.json()
-      if (data.success) setRelationships(data.relationships)
-      else setError(data.error)
-    } catch (e) { setError(String(e)) }
-    finally { setLoading(false) }
-  }, [statusFilter])
+      
+      if (data.success) {
+        if (isLoadMore) {
+          setRelationships(prev => [...prev, ...data.relationships])
+          setPage(p => p + 1)
+        } else {
+          setRelationships(data.relationships)
+          setPage(0)
+        }
+        setTotal(data.total)
+      } else {
+        setError(data.error)
+      }
+    } catch (e) {
+      setError(String(e))
+    } finally {
+      setLoading(false)
+      setLoadingMore(false)
+    }
+  }, [statusFilter, page])
 
-  useEffect(() => { fetchRelationships() }, [fetchRelationships])
+  useEffect(() => {
+    setLoading(true)
+    fetchRelationships()
+  }, [statusFilter]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const mentorRels = relationships
-    .filter(r => r.type === 'mentor_startup')
-    .filter((relationship) => {
-      const needle = search.trim().toLowerCase()
-      if (!needle) return true
-      return [relationship.entityA.name, relationship.entityB.name, relationship.rationale ?? '', relationship.formation]
-        .some((value) => value.toLowerCase().includes(needle))
-    })
+  const handleLoadMore = () => {
+    setLoadingMore(true)
+    fetchRelationships(true)
+  }
+
+  const filteredRelationships = relationships.filter((relationship) => {
+    const needle = search.trim().toLowerCase()
+    if (!needle) return true
+    return [relationship.entityA.name, relationship.entityB.name, relationship.rationale ?? '', relationship.formation]
+      .some((value) => value.toLowerCase().includes(needle))
+  })
 
   return (
     <div className="p-8">
@@ -86,25 +113,42 @@ export default function RelationshipsPage() {
       {error && !loading && (
         <EmptyState title="Failed to load" description={error} action={<button onClick={fetchRelationships} className="text-sm text-[#1A56DB] underline">Retry</button>} />
       )}
-      {!loading && !error && mentorRels.length === 0 && (
-        <EmptyState title="No relationships yet" description="Approve mentor matches to create Relationship Objects." />
+      {!loading && filteredRelationships.length === 0 && (
+        <EmptyState title="No relationships found" description="Adjust your search or approve mentor matches." />
       )}
-      {!loading && mentorRels.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mentorRels.map(r => (
-            <RelationshipCard
-              key={r.id}
-              entityAName={r.entityA.name}
-              entityBName={r.entityB.name}
-              type={r.type}
-              status={r.status}
-              formation={r.formation}
-              confidence={r.confidence}
-              rationale={r.rationale}
-              alignmentFactors={r.alignmentFactors}
-            />
-          ))}
-        </div>
+      {!loading && filteredRelationships.length > 0 && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredRelationships.map(r => (
+              <RelationshipCard
+                key={r.id}
+                entityAName={r.entityA.name}
+                entityBName={r.entityB.name}
+                type={r.type}
+                status={r.status}
+                formation={r.formation}
+                confidence={r.confidence}
+                rationale={r.rationale}
+                alignmentFactors={r.alignmentFactors}
+              />
+            ))}
+          </div>
+
+          {relationships.length < total && (
+            <div className="mt-12 flex flex-col items-center gap-4">
+              <p className="text-sm text-gray-500">
+                Showing {relationships.length} of {total} relationships
+              </p>
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="px-8 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 transition-all"
+              >
+                {loadingMore ? 'Loading...' : 'Load More Relationships'}
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

@@ -17,18 +17,29 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
     const type = searchParams.get('type')
-    const search = searchParams.get('search')
+    const skip = searchParams.get('skip') ? parseInt(searchParams.get('skip')!) : undefined
+    const take = searchParams.get('take') ? parseInt(searchParams.get('take')!) : undefined
 
     const entities = await prisma.entity.findMany({
       where: {
         ...(type ? { type } : {}),
-        ...(search ? { name: { contains: search, mode: 'insensitive' } } : {}),
+        ...(search ? { name: { contains: search } } : {}),
       },
       orderBy: { createdAt: 'desc' },
+      skip,
+      take,
     })
 
-    return NextResponse.json({ success: true, entities })
+    const total = await prisma.entity.count({
+      where: {
+        ...(type ? { type } : {}),
+        ...(search ? { name: { contains: search } } : {}),
+      },
+    })
+
+    return NextResponse.json({ success: true, entities, total })
   } catch (err) {
+    console.error('API Error:', err)
     return NextResponse.json({ success: false, error: String(err) }, { status: 500 })
   }
 }

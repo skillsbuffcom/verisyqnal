@@ -30,20 +30,20 @@ export default function DashboardPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [eRes, rRes, pRes] = await Promise.all([
-          fetch('/api/entities').then(r => r.json()),
-          fetch('/api/relationships').then(r => r.json()),
-          fetch('/api/programmes').then(r => r.json()),
+        const [statsRes, recentRes] = await Promise.all([
+          fetch('/api/stats').then(r => r.json()),
+          fetch('/api/relationships?type=mentor_startup&limit=3').then(r => r.json()),
         ])
-        const rels: Relationship[] = rRes.relationships ?? []
-        const matches = rels.filter(r => r.formation === 'ai_matched').length
-        setStats({
-          entities: eRes.entities?.length ?? 0,
-          relationships: rels.length,
-          programmes: pRes.programmes?.length ?? 0,
-          matches,
-        })
-        setRecent(rels.filter(r => r.type === 'mentor_startup').slice(0, 3))
+        
+        if (statsRes.success) {
+          setStats(statsRes.stats)
+        }
+        
+        if (recentRes.success) {
+          setRecent(recentRes.relationships ?? [])
+        }
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err)
       } finally {
         setLoading(false)
       }

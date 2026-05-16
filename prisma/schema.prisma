@@ -1,11 +1,11 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Entity {
@@ -13,13 +13,16 @@ model Entity {
   type      String
   name      String
   profile   Json
-  tags      String[]
+  tags      Json     @default("[]")
   geography String?
   stage     String?
   createdAt DateTime @default(now())
 
   relationshipsAsA Relationship[] @relation("EntityA")
   relationshipsAsB Relationship[] @relation("EntityB")
+
+  @@index([type])
+  @@index([name])
 }
 
 model Relationship {
@@ -32,8 +35,8 @@ model Relationship {
   formation        String
   confidence       Int?
   rationale        String?
-  alignmentFactors String[]
-  riskFlags        String[]
+  alignmentFactors Json     @default("[]")
+  riskFlags        Json     @default("[]")
   governance       Json?
   memory           Json     @default("[]")
   createdAt        DateTime @default(now())
@@ -41,13 +44,19 @@ model Relationship {
 
   entityA Entity @relation("EntityA", fields: [entityAId], references: [id])
   entityB Entity @relation("EntityB", fields: [entityBId], references: [id])
+
+  @@index([type])
+  @@index([status])
+  @@index([programmeId])
+  @@index([entityAId])
+  @@index([entityBId])
 }
 
 model Programme {
   id        String   @id @default(cuid())
   name      String
   owner     String?
-  geography String[]
+  geography Json     @default("[]")
   status    String?
   rules     Json?
   cohort    String?
