@@ -22,7 +22,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       <Sidebar />
       <div className="flex min-h-screen flex-1 flex-col">
         <header className="sticky top-0 z-40 border-b border-(--border) bg-(--background)/92 backdrop-blur">
-          <div className="flex items-center justify-end gap-2 px-4 py-3">
+          <div className="flex items-center justify-between gap-2 px-4 py-3">
+            <Link href="/" className="text-sm font-semibold tracking-[0.18em] text-(--teal-strong) uppercase hover:opacity-80 transition-opacity lg:hidden">
+              Verisyqnal
+            </Link>
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <button

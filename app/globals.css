@@ -209,9 +209,9 @@ textarea {
   background: conic-gradient(
     from var(--neon-angle),
     transparent 0%,
-    #2dd4bf 12%,
-    #99f6e4 18%,
-    #2dd4bf 24%,
-    transparent 36%
+    var(--teal) 10%,
+    var(--teal-strong) 15%,
+    var(--teal) 20%,
+    transparent 40%
   );
 }

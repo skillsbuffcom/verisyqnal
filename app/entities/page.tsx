@@ -93,7 +93,7 @@ export default function EntitiesPage() {
         action={
           <Link
             href="/entities/new"
-            className="rounded-lg bg-(--teal) px-4 py-2 text-sm font-medium text-(--accent-foreground) hover:opacity-90 transition-opacity"
+            className="block w-full sm:w-auto rounded-lg bg-(--teal) px-4 py-2 text-center text-sm font-medium text-(--accent-foreground) hover:opacity-90 transition-opacity"
           >
             Add Entity
           </Link>

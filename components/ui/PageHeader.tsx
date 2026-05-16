@@ -8,13 +8,13 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
   return (
-    <div className="mb-8 flex items-center justify-between gap-4">
+    <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <p className="mono text-xs uppercase tracking-[0.28em] text-[var(--teal-strong)]">Verisyqnal</p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)]">{title}</h1>
+        <p className="mono text-xs uppercase tracking-[0.28em] text-(--teal-strong)">Verisyqnal</p>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tighter text-foreground">{title}</h1>
         {subtitle && <p className="app-muted mt-2 text-sm">{subtitle}</p>}
       </div>
-      {action && <div>{action}</div>}
+      {action && <div className="w-full sm:w-auto">{action}</div>}
     </div>
   )
 }

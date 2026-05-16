@@ -19,11 +19,11 @@ export function Sidebar() {
 
   return (
     <div className="sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-(--border) bg-[#071311]/92 px-4 py-6 text-white backdrop-blur-xl lg:flex">
-      <div className="rounded-4xl border border-white/10 bg-white/5 px-6 py-6 shadow-2xl">
-        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#2dd4bf]">Verisyqnal</p>
+      <Link href="/" className="block rounded-4xl border border-white/10 bg-white/5 px-6 py-6 shadow-2xl hover:border-white/20 transition-all group/logo">
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#2dd4bf] group-hover/logo:text-white transition-colors">Verisyqnal</p>
         <h1 className="mt-2 text-xl font-semibold tracking-tight leading-tight">Control plane for relationships</h1>
         <p className="mt-3 text-xs text-white/50 leading-relaxed font-medium">Programmable infrastructure for accelerators, funders, and ecosystem operators.</p>
-      </div>
+      </Link>
 
       <nav className="flex-1 space-y-1.5 px-2 py-8">
         {navItems.map(({ href, label, icon: Icon }) => {

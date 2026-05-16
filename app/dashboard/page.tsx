@@ -81,11 +81,11 @@ export default function DashboardPage() {
               Your ecosystem is now programmable. Every match, every mentor, and every 
               ecosystem memory can live in one structured system.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/demo" className="rounded-full bg-(--teal) px-6 py-2.5 text-sm font-bold text-(--accent-foreground) hover:opacity-90 transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <Link href="/demo" className="w-full sm:w-auto text-center rounded-full bg-(--teal) px-6 py-2.5 text-sm font-bold text-(--accent-foreground) hover:opacity-90 transition-all hover:scale-[1.02] active:scale-[0.98]">
                 Open Demo Narrative
               </Link>
-              <Link href="/about-relationship-object" className="rounded-full border border-(--border-strong) px-6 py-2.5 text-sm font-semibold hover:bg-(--surface-muted) transition-colors">
+              <Link href="/about-relationship-object" className="w-full sm:w-auto text-center rounded-full border border-(--border-strong) px-6 py-2.5 text-sm font-semibold hover:bg-(--surface-muted) transition-colors">
                 View Relationship Object
               </Link>
             </div>

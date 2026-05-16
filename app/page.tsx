@@ -5,12 +5,14 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 export default function HomePage() {
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-x-clip">
 
       {/* Navbar */}
       <header className="sticky top-0 z-50 w-full border-b border-(--border) bg-(--background)/85 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6 lg:px-10">
-          <span className="text-sm font-semibold tracking-[0.18em] text-(--teal-strong) uppercase">Verisyqnal</span>
+          <Link href="/" className="text-sm font-semibold tracking-[0.18em] text-(--teal-strong) uppercase hover:opacity-80 transition-opacity">
+            Verisyqnal
+          </Link>
           <nav className="hidden items-center gap-6 md:flex">
             <Link href="/about-relationship-object" className="text-sm text-foreground opacity-60 hover:opacity-100 transition-opacity">
               Relationship Object
@@ -32,16 +34,16 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:px-10 lg:py-28">
-        <div>
+      <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 pt-10 pb-12 lg:grid-cols-2 lg:px-10 lg:py-28">
+        <div className="text-center lg:text-left">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-(--teal-strong)">Ecosystem Infrastructure</p>
           <h1 className="mt-5 text-5xl font-semibold tracking-[-0.06em] text-foreground sm:text-6xl lg:text-7xl">
             The operating layer for innovation ecosystems.
           </h1>
-          <p className="mt-6 max-w-lg text-lg leading-8 text-foreground opacity-60">
+          <p className="mt-6 max-w-lg text-lg leading-8 text-foreground opacity-60 mx-auto lg:mx-0">
             Turn mentor relationships into programmable, auditable infrastructure — with memory, governance, and confidence scoring from day one.
           </p>
-          <div className="mt-8">
+          <div className="mt-8 flex justify-center lg:justify-start">
             <Link
               href="/dashboard"
               className="inline-flex items-center gap-2 rounded-lg bg-(--teal) px-6 py-3 text-sm font-semibold text-(--accent-foreground) hover:opacity-90 transition-opacity"
@@ -53,13 +55,13 @@ export default function HomePage() {
         </div>
 
         {/* Product preview mockup */}
-        <div className="group/card relative rounded-2xl p-px overflow-hidden shadow-2xl">
+        <div className="group/card relative rounded-2xl p-[2px] overflow-hidden shadow-2xl">
           {/* Static border (default) */}
           <div className="absolute inset-0 rounded-2xl bg-(--border)" />
           {/* Neon running border (hover) */}
           <div className="neon-border-spin absolute inset-0 opacity-0 transition-opacity duration-700 group-hover/card:opacity-100" />
           {/* Card body sits above both layers */}
-          <div className="relative rounded-[calc(1rem-1px)] bg-(--surface) p-1 z-10">
+          <div className="relative rounded-[calc(1rem-2px)] bg-(--surface) p-1 z-10">
           <div className="rounded-xl bg-[#060F0D] p-5 space-y-3">
             {/* Window chrome */}
             <div className="flex items-center gap-1.5 mb-4">
@@ -112,12 +114,12 @@ export default function HomePage() {
       </section>
 
       {/* Relationship Object — dark centrepiece */}
-      <section className="bg-[#040C0A] py-24">
+      <section className="bg-[#040C0A] pt-8 pb-12 lg:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="grid items-center gap-12 lg:grid-cols-2">
 
-            {/* Left — Terminal Illustration */}
-            <div className="relative group">
+            {/* Terminal Illustration */}
+            <div className="relative group order-2 lg:order-1">
               {/* Outer glow */}
               <div className="absolute -inset-2 rounded-[2.5rem] bg-linear-to-r from-(--teal) to-(--teal-strong) opacity-10 blur-2xl transition duration-1000 group-hover:opacity-20"></div>
               
@@ -189,8 +191,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right — content */}
-            <div>
+            {/* Content */}
+            <div className="order-1 lg:order-2">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-(--teal-strong)">The Relationship Object</p>
               <h2 className="mt-4 text-4xl font-semibold tracking-tighter text-white sm:text-5xl">
                 One object. Every relationship.
@@ -227,7 +229,7 @@ export default function HomePage() {
       </section>
 
       {/* How it works */}
-      <section className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <section className="mx-auto max-w-7xl px-6 pt-12 pb-24 lg:px-10 lg:py-24">
         <div className="mb-14">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-(--teal-strong)">How it works</p>
           <h2 className="mt-4 text-4xl font-semibold tracking-tighter text-foreground">
@@ -238,8 +240,9 @@ export default function HomePage() {
         <div className="grid gap-px border border-(--border) rounded-2xl overflow-hidden bg-(--border) lg:grid-cols-3">
 
           {/* ── Card 1: Ingest ── */}
-          <div className="flex flex-col bg-background">
-            <div className="relative h-52 overflow-hidden bg-background">
+          <div className="flex flex-col bg-background relative group">
+            <div className="relative h-64 overflow-hidden bg-background">
+              <div className="absolute top-6 right-8 z-10 rounded-full border border-(--teal-strong)/20 bg-(--teal-soft) px-2.5 py-1 text-[10px] font-mono font-bold tracking-[0.2em] text-(--teal-strong) opacity-50 group-hover:opacity-100 transition-opacity backdrop-blur-sm">STEP 01</div>
               <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(circle, #1A3D33 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="rounded-xl border border-[#1A3D33] p-4 shadow-2xl" style={{ width: '152px', backgroundColor: '#0A1E1A' }}>
@@ -272,18 +275,18 @@ export default function HomePage() {
               </div>
             </div>
             <div className="p-8">
-              <div className="flex items-center gap-2.5 mb-5">
-                <span className="font-mono text-xs text-(--teal-strong)">01</span>
-                <FileText size={14} className="text-(--teal-strong) opacity-50" />
+              <div className="flex items-center gap-3 mb-3">
+                <FileText size={18} className="text-(--teal-strong)" />
+                <h3 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Ingest</h3>
               </div>
-              <h3 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Ingest</h3>
-              <p className="mt-3 text-sm leading-7 text-foreground opacity-60">Upload a pitch deck. Structured profiles are extracted automatically — no forms.</p>
+              <p className="text-sm leading-7 text-foreground opacity-60">Upload a pitch deck. Structured profiles are extracted automatically — no forms.</p>
             </div>
           </div>
 
           {/* ── Card 2: Match ── */}
-          <div className="flex flex-col bg-background">
-            <div className="relative h-52 overflow-hidden bg-background">
+          <div className="flex flex-col bg-background relative group">
+            <div className="relative h-64 overflow-hidden bg-background">
+              <div className="absolute top-6 right-8 z-10 rounded-full border border-(--teal-strong)/20 bg-(--teal-soft) px-2.5 py-1 text-[10px] font-mono font-bold tracking-[0.2em] text-(--teal-strong) opacity-50 group-hover:opacity-100 transition-opacity backdrop-blur-sm">STEP 02</div>
               <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(circle, #1A3D33 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 px-8">
                 <div className="self-start rounded-lg border border-[#1A3D33] px-2.5 py-1.5 flex items-center gap-1.5" style={{ backgroundColor: '#0A1E1A' }}>
@@ -317,18 +320,18 @@ export default function HomePage() {
               </div>
             </div>
             <div className="p-8">
-              <div className="flex items-center gap-2.5 mb-5">
-                <span className="font-mono text-xs text-(--teal-strong)">02</span>
-                <Cpu size={14} className="text-(--teal-strong) opacity-50" />
+              <div className="flex items-center gap-3 mb-3">
+                <Cpu size={18} className="text-(--teal-strong)" />
+                <h3 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Match</h3>
               </div>
-              <h3 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Match</h3>
-              <p className="mt-3 text-sm leading-7 text-foreground opacity-60">Every mentor is scored against the startup. Confidence, rationale, and alignment factors returned instantly.</p>
+              <p className="text-sm leading-7 text-foreground opacity-60">Every mentor is scored against the startup. Confidence, rationale, and alignment factors returned instantly.</p>
             </div>
           </div>
 
           {/* ── Card 3: Brief ── */}
-          <div className="flex flex-col bg-background">
-            <div className="relative h-52 overflow-hidden bg-background">
+          <div className="flex flex-col bg-background relative group">
+            <div className="relative h-64 overflow-hidden bg-background">
+              <div className="absolute top-6 right-8 z-10 rounded-full border border-(--teal-strong)/20 bg-(--teal-soft) px-2.5 py-1 text-[10px] font-mono font-bold tracking-[0.2em] text-(--teal-strong) opacity-50 group-hover:opacity-100 transition-opacity backdrop-blur-sm">STEP 03</div>
               <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(circle, #1A3D33 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="rounded-xl border border-[#1A3D33] overflow-hidden shadow-2xl" style={{ width: '168px', backgroundColor: '#0A1E1A' }}>
@@ -355,12 +358,11 @@ export default function HomePage() {
               </div>
             </div>
             <div className="p-8">
-              <div className="flex items-center gap-2.5 mb-5">
-                <span className="font-mono text-xs text-(--teal-strong)">03</span>
-                <Video size={14} className="text-(--teal-strong) opacity-50" />
+              <div className="flex items-center gap-3 mb-3">
+                <Video size={18} className="text-(--teal-strong)" />
+                <h3 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Brief</h3>
               </div>
-              <h3 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Brief</h3>
-              <p className="mt-3 text-sm leading-7 text-foreground opacity-60">Approved matches generate a personalised briefing. The relationship is live, tracked, and auditable.</p>
+              <p className="text-sm leading-7 text-foreground opacity-60">Approved matches generate a personalised briefing. The relationship is live, tracked, and auditable.</p>
             </div>
           </div>
 
