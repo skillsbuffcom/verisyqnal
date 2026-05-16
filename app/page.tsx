@@ -14,9 +14,6 @@ export default function HomePage() {
             Verisyqnal
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
-            <Link href="/about-relationship-object" className="text-sm text-foreground opacity-60 hover:opacity-100 transition-opacity">
-              Relationship Object
-            </Link>
             <Link href="/demo" className="text-sm text-foreground opacity-60 hover:opacity-100 transition-opacity">
               Demo
             </Link>
@@ -215,10 +212,10 @@ export default function HomePage() {
               </ul>
               <div className="mt-10">
                 <Link
-                  href="/about-relationship-object"
+                  href="/dashboard"
                   className="inline-flex items-center gap-2 rounded-lg bg-(--teal) px-6 py-3 text-sm font-semibold text-(--accent-foreground) hover:opacity-90 transition-opacity"
                 >
-                  Learn about the Object
+                  Open the Platform
                   <ArrowRight size={16} />
                 </Link>
               </div>

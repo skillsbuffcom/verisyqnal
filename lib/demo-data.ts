@@ -128,3 +128,20 @@ export function buildDemoBriefing(args: {
     alignment_highlight: args.alignmentFactors[0] ?? args.startupProfile.tags[0] ?? 'Domain fit',
   }
 }
+
+export function buildTextBriefing(rel: {
+  entityA: { name: string; profile: unknown }
+  entityB: { name: string; profile: unknown }
+  rationale: string | null
+  alignmentFactors: string[]
+}, programmeName: string) {
+  const startup = rel.entityA.profile as StartupProfile
+  return buildDemoBriefing({
+    mentorName: rel.entityB.name,
+    programmeName,
+    startupName: rel.entityA.name,
+    startupProfile: startup,
+    rationale: rel.rationale ?? 'Strong alignment across expertise and stage.',
+    alignmentFactors: rel.alignmentFactors,
+  })
+}

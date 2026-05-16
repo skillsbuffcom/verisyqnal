@@ -116,6 +116,14 @@ function UploadTab({ demoMode }: { demoMode: boolean }) {
   if (loading) return <LoadingSpinner label="Gemini is reading your deck..." />
 
   if (profile && editedProfile) {
+    const isFormIncomplete = !editedProfile.company_name?.trim() || 
+                           !editedProfile.industry?.trim() || 
+                           !editedProfile.problem?.trim() || 
+                           !editedProfile.solution?.trim() || 
+                           !editedProfile.geography?.trim() || 
+                           !editedProfile.revenue_model?.trim() ||
+                           !editedProfile.stage
+
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <p className="text-sm text-(--text-muted) mb-4 font-medium">Review and edit the extracted profile before saving to the institutional memory.</p>
@@ -124,6 +132,7 @@ function UploadTab({ demoMode }: { demoMode: boolean }) {
             <div key={field}>
               <label className="block text-[10px] font-bold text-(--teal-strong) mb-1.5 uppercase tracking-[0.2em] ml-1">{field.replace('_', ' ')}</label>
               <input
+                required
                 className="w-full bg-(--surface-muted) border border-(--border) rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-(--teal-soft) transition-all"
                 value={editedProfile[field] as string}
                 onChange={(e) => setEditedProfile({ ...editedProfile, [field]: e.target.value })}
@@ -144,10 +153,10 @@ function UploadTab({ demoMode }: { demoMode: boolean }) {
         {error && <p className="text-sm text-red-500 bg-red-500/5 border border-red-500/20 p-4 rounded-xl font-medium">{error}</p>}
         <button
           onClick={handleSave}
-          disabled={saving}
-          className="w-full py-4 bg-(--teal) text-(--accent-foreground) rounded-2xl font-bold text-sm hover:opacity-90 disabled:opacity-50 shadow-(--teal-soft) transition-all"
+          disabled={saving || isFormIncomplete}
+          className="w-full py-4 bg-(--teal) text-(--accent-foreground) rounded-2xl font-bold text-sm hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed shadow-(--teal-soft) transition-all"
         >
-          {saving ? 'Saving to Ecosystem...' : 'Finalize Entity'}
+          {saving ? 'Saving to Ecosystem...' : isFormIncomplete ? 'Fill all fields to continue' : 'Finalize Entity'}
         </button>
       </div>
     )
@@ -202,6 +211,13 @@ function MentorTab() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const isFormIncomplete = !form.name.trim() || 
+                         !form.bio.trim() || 
+                         !form.expertise.trim() || 
+                         !form.industries.trim() || 
+                         !form.geography.trim() || 
+                         !form.availability.trim()
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -241,18 +257,21 @@ function MentorTab() {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="app-panel rounded-[2.5rem] p-8 space-y-5 border border-(--border-strong)">
         {[
-          { key: 'name', label: 'Full Name', placeholder: 'Dr. Ahmad Razif' },
-          { key: 'bio', label: 'Bio', placeholder: 'Serial entrepreneur with 3 exits in B2B SaaS...' },
-          { key: 'expertise', label: 'Expertise (comma-separated)', placeholder: 'B2B SaaS, Enterprise Sales, Fundraising' },
+          { key: 'name', label: 'Full Name', placeholder: 'Dr. Ahmad Razif', required: true },
+          { key: 'bio', label: 'Bio', placeholder: 'Serial entrepreneur with 3 exits in B2B SaaS...', required: true },
+          { key: 'expertise', label: 'Expertise (comma-separated)', placeholder: 'B2B SaaS, Enterprise Sales, Fundraising', required: true },
           { key: 'past_exits', label: 'Past Exits (number)', placeholder: '2', type: 'number' },
-          { key: 'industries', label: 'Industries (comma-separated)', placeholder: 'FinTech, SaaS' },
-          { key: 'geography', label: 'Geography', placeholder: 'Malaysia' },
-          { key: 'availability', label: 'Availability', placeholder: '4 hours/month' },
-        ].map(({ key, label, placeholder, type }) => (
+          { key: 'industries', label: 'Industries (comma-separated)', placeholder: 'FinTech, SaaS', required: true },
+          { key: 'geography', label: 'Geography', placeholder: 'Malaysia', required: true },
+          { key: 'availability', label: 'Availability', placeholder: '4 hours/month', required: true },
+        ].map(({ key, label, placeholder, type, required }) => (
           <div key={key}>
-            <label className="block text-[10px] font-bold text-(--teal-strong) mb-1.5 uppercase tracking-[0.2em] ml-1">{label}</label>
+            <label className="block text-[10px] font-bold text-(--teal-strong) mb-1.5 uppercase tracking-[0.2em] ml-1">
+              {label} {required && <span className="text-red-500">*</span>}
+            </label>
             <input
               type={type || 'text'}
+              required={required}
               className="w-full bg-(--surface-muted) border border-(--border) rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-(--teal-soft) transition-all"
               placeholder={placeholder}
               value={form[key as keyof typeof form]}
@@ -264,10 +283,10 @@ function MentorTab() {
       {error && <p className="text-sm text-red-500 bg-red-500/5 border border-red-500/20 p-4 rounded-xl font-medium">{error}</p>}
       <button
         type="submit"
-        disabled={saving || !form.name}
-        className="w-full py-4 bg-(--teal) text-(--accent-foreground) rounded-2xl font-bold text-sm hover:opacity-90 disabled:opacity-50 shadow-(--teal-soft) transition-all"
+        disabled={saving || isFormIncomplete}
+        className="w-full py-4 bg-(--teal) text-(--accent-foreground) rounded-2xl font-bold text-sm hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed shadow-(--teal-soft) transition-all"
       >
-        {saving ? 'Registering Mentor...' : 'Complete Mentor Registration'}
+        {saving ? 'Registering Mentor...' : isFormIncomplete ? 'Fill all required fields' : 'Complete Mentor Registration'}
       </button>
     </form>
   )

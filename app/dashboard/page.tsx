@@ -85,9 +85,6 @@ export default function DashboardPage() {
               <Link href="/demo" className="w-full sm:w-auto text-center rounded-full bg-(--teal) px-6 py-2.5 text-sm font-bold text-(--accent-foreground) hover:opacity-90 transition-all hover:scale-[1.02] active:scale-[0.98]">
                 Open Demo Narrative
               </Link>
-              <Link href="/about-relationship-object" className="w-full sm:w-auto text-center rounded-full border border-(--border-strong) px-6 py-2.5 text-sm font-semibold hover:bg-(--surface-muted) transition-colors">
-                View Relationship Object
-              </Link>
             </div>
           </div>
         </section>

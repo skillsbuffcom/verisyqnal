@@ -13,7 +13,7 @@ model Entity {
   type      String
   name      String
   profile   Json
-  tags      Json     @default("[]")
+  tags      String[] @default([])
   geography String?
   stage     String?
   createdAt DateTime @default(now())
@@ -58,7 +58,7 @@ model Programme {
   id        String   @id @default(cuid())
   name      String
   owner     String?
-  geography Json     @default("[]")
+  geography String[] @default([])
   status    String?
   rules     Json?
   cohort    String?

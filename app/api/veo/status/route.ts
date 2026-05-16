@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
+import { buildTextBriefing } from '@/lib/demo-data'
 
 export async function GET(req: NextRequest) {
   try {
@@ -19,8 +20,8 @@ export async function GET(req: NextRequest) {
       // Simulate 10-second generation time
       if (elapsed > 10000) {
         // Complete the job with a high-quality demo video
-        // Using a professional stock tech briefing video as placeholder
-        const demoVideoUrl = 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' 
+        // Using a professional tech-themed demo video as placeholder (15s)
+        const demoVideoUrl = 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' 
         
         await prisma.relationship.update({
           where: { id },
@@ -47,10 +48,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: true, status: 'processing', relationship_id: id })
     }
 
+    const programme = rel.programmeId
+      ? await prisma.programme.findUnique({ where: { id: rel.programmeId } })
+      : null
+    const programmeName = programme?.name ?? rel.programmeId ?? 'Programme'
+
     return NextResponse.json({ 
       success: true, 
       status: rel.veoStatus || 'none', 
+      type: rel.veoVideoUrl ? 'video' : 'text_briefing',
       url: rel.veoVideoUrl,
+      briefing: rel.veoVideoUrl ? undefined : buildTextBriefing(rel, programmeName),
       relationship_id: id 
     })
   } catch (err) {

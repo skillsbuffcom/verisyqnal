@@ -103,9 +103,6 @@ export default function RelationshipsPage() {
         subtitle="Historical and active matches in your ecosystem"
         action={
           <div className="flex gap-2">
-            <button className="rounded-lg bg-(--teal) px-4 py-2 text-sm font-medium text-(--accent-foreground) hover:opacity-90 transition-opacity">
-              Export Memory
-            </button>
             <button
               onClick={() => setShowAuditLogs(true)}
               className="rounded-lg bg-(--surface-muted) px-4 py-2 text-sm font-medium text-(--text-muted) hover:bg-(--border) transition-all"

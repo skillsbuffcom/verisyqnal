@@ -169,7 +169,11 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
               const statusRes = await fetch(`/api/veo/status?id=${data.relationship.id}`)
               const statusData = await statusRes.json()
               if (statusData.success && statusData.status === 'completed') {
-                setVeoResult({ type: 'video', url: statusData.url })
+                setVeoResult({ 
+                  type: statusData.type, 
+                  url: statusData.url,
+                  briefing: statusData.briefing 
+                })
                 setVeoLoading(false)
               } else if (statusData.success && statusData.status === 'failed') {
                 setPanelError('Briefing generation failed.')
@@ -279,7 +283,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                 
                 <p className="mono text-[10px] uppercase tracking-[0.28em] text-(--teal-strong) font-bold">Relationship formation engine</p>
                 <h2 className="mt-3 text-3xl font-semibold tracking-tighter">Find mentors with rationale and confidence.</h2>
-                <p className="app-muted mt-3 max-w-2xl text-sm leading-7">
+                <p className="app-muted mt-3 max-w-lg text-sm leading-7">
                   The strongest match should feel explainable, governable, and ready for institutional review. 
                   Gemini will analyze mentor expertise against startup gaps.
                 </p>
@@ -336,17 +340,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             </div>
           )}
 
-          {approvedRelationship && (
-            <div className="app-panel mt-6 rounded-4xl p-6 border border-(--border-strong)">
-              <div className="flex items-center justify-between mb-4">
-                <p className="mono text-[10px] uppercase tracking-[0.28em] text-(--teal-strong) font-bold">Relationship Object</p>
-                <span className="text-[10px] font-mono text-(--text-muted) opacity-50 uppercase">{approvedRelationship.id}</span>
-              </div>
-              <pre className="mono mt-2 overflow-auto rounded-2xl bg-[#081513] p-5 text-[13px] leading-6 text-[#c6fff6] shadow-inner">
-                {JSON.stringify(approvedRelationship, null, 2)}
-              </pre>
-            </div>
-          )}
+
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import prisma from '@/lib/db'
-import { buildDemoBriefing } from '@/lib/demo-data'
+import { buildTextBriefing } from '@/lib/demo-data'
 import { isDemoModeRequest } from '@/lib/demo-mode'
 import type { StartupProfile } from '@/lib/types'
 
@@ -27,22 +27,7 @@ function buildVeoPrompt(rel: {
 Style: dark blue and white, text-forward, minimal animation.`
 }
 
-function buildTextBriefing(rel: {
-  entityA: { name: string; profile: unknown }
-  entityB: { name: string; profile: unknown }
-  rationale: string | null
-  alignmentFactors: string[]
-}, programmeName: string) {
-  const startup = rel.entityA.profile as StartupProfile
-  return buildDemoBriefing({
-    mentorName: rel.entityB.name,
-    programmeName,
-    startupName: rel.entityA.name,
-    startupProfile: startup,
-    rationale: rel.rationale ?? 'Strong alignment across expertise and stage.',
-    alignmentFactors: rel.alignmentFactors,
-  })
-}
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -81,10 +66,10 @@ export async function POST(req: NextRequest) {
             await prisma.relationship.update({
               where: { id: relationship_id },
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              data: { 
+              data: {
                 veoStatus: 'completed',
                 veoVideoUrl: url,
-                memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], { timestamp: new Date().toISOString(), event: 'veo_briefing_generated', actor: 'system', notes: url }] 
+                memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], { timestamp: new Date().toISOString(), event: 'veo_briefing_generated', actor: 'system', notes: url }]
               },
             })
             return NextResponse.json({ success: true, type: 'video', url, relationship_id })
@@ -100,21 +85,21 @@ export async function POST(req: NextRequest) {
       where: { id: relationship_id },
       data: {
         veoStatus: 'completed',
-        memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], { 
-          timestamp: new Date().toISOString(), 
-          event: 'veo_text_fallback', 
+        memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], {
+          timestamp: new Date().toISOString(),
+          event: 'veo_text_fallback',
           actor: 'system',
           notes: 'No Veo credentials found, using confident text fallback'
         }]
       },
     })
 
-    return NextResponse.json({ 
-      success: true, 
-      status: 'completed', 
-      type: 'text_briefing', 
-      briefing, 
-      relationship_id 
+    return NextResponse.json({
+      success: true,
+      status: 'completed',
+      type: 'text_briefing',
+      briefing,
+      relationship_id
     })
 
   } catch (err) {
