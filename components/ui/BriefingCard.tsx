@@ -50,8 +50,10 @@ export function BriefingCard({ type, videoUrl, briefing }: BriefingCardProps) {
             </div>
           ))}
           {type === 'text_briefing' && (
-            <div className="bg-amber-50 px-5 py-2 dark:bg-amber-500/10">
-              <p className="text-xs text-amber-600 dark:text-amber-200">Video briefing unavailable — showing text summary</p>
+            <div className="bg-[#f0fdfa] px-5 py-3 dark:bg-[#14b8a6]/10 border-t border-[#14b8a6]/20">
+              <p className="text-xs font-medium text-[#0d9488] dark:text-[#5eead4] leading-relaxed">
+                Without Veo credentials in this environment, the system falls back to a structured text briefing — here's what the video version would contain.
+              </p>
             </div>
           )}
         </div>

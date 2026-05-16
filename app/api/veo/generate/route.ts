@@ -95,23 +95,23 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Default: Start simulated generation
+    // Default: Return text briefing immediately if no credentials (confidently)
     await prisma.relationship.update({
       where: { id: relationship_id },
       data: {
-        veoStatus: 'processing',
+        veoStatus: 'completed',
         memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], { 
           timestamp: new Date().toISOString(), 
-          event: 'veo_job_started', 
+          event: 'veo_text_fallback', 
           actor: 'system',
-          notes: 'Simulated video generation started'
+          notes: 'No Veo credentials found, using confident text fallback'
         }]
       },
     })
 
     return NextResponse.json({ 
       success: true, 
-      status: 'processing', 
+      status: 'completed', 
       type: 'text_briefing', 
       briefing, 
       relationship_id 
