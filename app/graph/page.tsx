@@ -75,17 +75,28 @@ export default function GraphPage() {
   const [allEntities, setAllEntities] = useState<Entity[]>([])
   const [allRels, setAllRels] = useState<Relationship[]>([])
 
+  const [error, setError] = useState<string | null>(null)
+
   async function fetchAll() {
     setLoading(true)
+    setError(null)
     try {
       const [eRes, rRes, pRes] = await Promise.all([
         fetch('/api/entities').then(r => r.json()),
         fetch('/api/relationships').then(r => r.json()),
         fetch('/api/programmes').then(r => r.json()),
       ])
+      
+      if (!eRes.success) throw new Error(eRes.error || 'Failed to fetch entities')
+      if (!rRes.success) throw new Error(rRes.error || 'Failed to fetch relationships')
+      if (!pRes.success) throw new Error(pRes.error || 'Failed to fetch programmes')
+
       setAllEntities(eRes.entities ?? [])
       setAllRels(rRes.relationships ?? [])
       setProgrammes(pRes.programmes ?? [])
+    } catch (err) {
+      console.error('Graph Fetch Error:', err)
+      setError(String(err))
     } finally { setLoading(false) }
   }
 
@@ -112,22 +123,31 @@ export default function GraphPage() {
     <div className="flex h-full">
       <div className="flex-1 relative">
         {loading && <div className="absolute inset-0 z-10 bg-white flex items-center justify-center"><LoadingSpinner label="Loading ecosystem..." /></div>}
+        {error && (
+          <div className="absolute inset-0 z-10 bg-white flex items-center justify-center p-8 text-center">
+            <div className="max-w-md">
+              <h3 className="text-lg font-bold text-red-600 mb-2">Failed to Load Graph</h3>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <button onClick={fetchAll} className="px-4 py-2 bg-[#1A56DB] text-white rounded-lg text-sm font-semibold">Retry</button>
+            </div>
+          </div>
+        )}
 
         <div className="absolute top-4 left-4 z-10 flex gap-2">
           <select
-            className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm shadow-sm"
+            className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm shadow-sm text-gray-900 font-medium focus:outline-none focus:ring-1 focus:ring-blue-500"
             value={filterProgramme}
             onChange={(e) => setFilterProgramme(e.target.value)}
           >
             <option value="">All Programmes</option>
             {programmes.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
-          <button onClick={fetchAll} className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm shadow-sm hover:bg-gray-50 transition-colors">
+          <button onClick={fetchAll} className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm shadow-sm hover:bg-gray-50 transition-colors text-gray-900 font-medium focus:outline-none select-none">
             Refresh
           </button>
         </div>
 
-        <div className="absolute bottom-8 left-4 z-10 bg-white border border-gray-200 rounded-xl p-3 shadow-sm text-xs space-y-1">
+        <div className="absolute top-1/2 -translate-y-1/2 left-4 z-10 bg-white border border-gray-200 rounded-xl p-3 shadow-sm text-xs space-y-1">
           <p className="font-semibold text-gray-700 mb-1">Legend</p>
           {(Object.entries(NODE_COLORS) as [EntityType, string][]).map(([t, c]) => (
             <div key={t} className="flex items-center gap-2">

@@ -17,6 +17,7 @@ export async function GET() {
     const programmes = await prisma.programme.findMany({ orderBy: { createdAt: 'desc' } })
     return NextResponse.json({ success: true, programmes })
   } catch (err) {
+    console.error('API Error /api/programmes:', err)
     return NextResponse.json({ success: false, error: String(err) }, { status: 500 })
   }
 }

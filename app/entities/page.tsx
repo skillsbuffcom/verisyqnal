@@ -94,7 +94,7 @@ export default function EntitiesPage() {
           <button
             key={f.value}
             onClick={() => setFilter(f.value)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors select-none cursor-default ${
               filter === f.value
                 ? 'bg-[#1A56DB] text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

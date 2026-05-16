@@ -130,11 +130,11 @@ function UploadTab({ demoMode }: { demoMode: boolean }) {
         <div>
           <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Stage</label>
           <select
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A56DB] text-gray-900"
             value={editedProfile.stage}
             onChange={(e) => setEditedProfile({ ...editedProfile, stage: e.target.value as StartupProfile['stage'] })}
           >
-            {['idea', 'pre-seed', 'seed', 'series-a'].map((s) => <option key={s}>{s}</option>)}
+            {['idea', 'pre-seed', 'seed', 'series-a'].map((s) => <option key={s} className="text-gray-900">{s}</option>)}
           </select>
         </div>
         {error && <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{error}</p>}
