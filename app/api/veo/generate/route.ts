@@ -80,16 +80,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const isJimmy = rel.entityB.name === 'Jimmy Lee'
+    const jimmyVideoUrl = '/mp_.mp4'
+
     // Default: Return text briefing immediately if no credentials (confidently)
+    // UNLESS it's Jimmy Lee, then return the demo video
     await prisma.relationship.update({
       where: { id: relationship_id },
       data: {
         veoStatus: 'completed',
+        veoVideoUrl: isJimmy ? jimmyVideoUrl : undefined,
         memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], {
           timestamp: new Date().toISOString(),
-          event: 'veo_text_fallback',
+          event: isJimmy ? 'veo_demo_video' : 'veo_text_fallback',
           actor: 'system',
-          notes: 'No Veo credentials found, using confident text fallback'
+          notes: isJimmy ? 'Using Jimmy Lee demo video' : 'No Veo credentials found, using confident text fallback'
         }]
       },
     })
@@ -97,8 +102,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       status: 'completed',
-      type: 'text_briefing',
-      briefing,
+      type: isJimmy ? 'video' : 'text_briefing',
+      url: isJimmy ? jimmyVideoUrl : undefined,
+      briefing: isJimmy ? undefined : briefing,
       relationship_id
     })
 

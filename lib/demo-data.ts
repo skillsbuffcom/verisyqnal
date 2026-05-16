@@ -104,10 +104,26 @@ function scoreMentor(startup: StartupProfile, mentor: MentorEntity) {
 }
 
 export function buildDemoMatches(startupProfile: StartupProfile, mentors: MentorEntity[], topK: number) {
-  return mentors
+  const jimmy = mentors.find(m => m.name === 'Jimmy Lee')
+  const baseMatches = mentors
+    .filter(m => m.name !== 'Jimmy Lee')
     .map((mentor) => scoreMentor(startupProfile, mentor))
     .sort((a, b) => b.confidence - a.confidence)
-    .slice(0, topK)
+
+  if (jimmy) {
+    const jimmyMatch = {
+      mentor_id: jimmy.id,
+      mentor_name: jimmy.name,
+      mentor_profile: jimmy.profile as MentorProfile,
+      confidence: 99,
+      rationale: `Jimmy Lee is a perfect match for ${startupProfile.company_name} because his expertise in Ecosystem Architecture and Strategic AI directly addresses their need for institutional memory and auditable relationship governance. As a legendary architect, he offers unparalleled strategic guidance for their stage of growth.`,
+      alignment_factors: ['Ecosystem Architecture', 'Strategic AI', 'Institutional Memory'],
+      risk_flags: [],
+    } satisfies MatchCandidate
+    return [jimmyMatch, ...baseMatches].slice(0, topK)
+  }
+
+  return baseMatches.slice(0, topK)
 }
 
 export function buildDemoBriefing(args: {

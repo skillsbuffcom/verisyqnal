@@ -40,7 +40,16 @@ export function BriefingCard({ type, videoUrl, briefing }: BriefingCardProps) {
 
       {/* Body */}
       {type === 'video' && videoUrl ? (
-        <video src={videoUrl} controls className="w-full" />
+        <video 
+          src={videoUrl} 
+          controls 
+          playsInline 
+          preload="auto"
+          className="w-full bg-black aspect-video"
+        >
+          <source src={videoUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       ) : briefing ? (
         <div className="divide-y divide-[var(--border)] bg-[var(--surface-strong)]">
           {(Object.keys(BRIEFING_LABELS) as (keyof TextBriefing)[]).map((key) => (

@@ -137,6 +137,22 @@ async function main() {
         tags: ['HealthTech', 'Series A', 'Data', 'Impact'], geography: 'Singapore',
       },
     }),
+    prisma.entity.create({
+      data: {
+        type: 'mentor', name: 'Jimmy Lee',
+        profile: { 
+          name: 'Jimmy Lee', 
+          bio: 'Legendary ecosystem architect and pioneer of programmable innovation infrastructure. Former CTO of a global accelerator network with over 500 successful matches. Specializes in institutional memory and AI-driven relationship auditability.', 
+          expertise: ['Ecosystem Architecture', 'Strategic AI', 'Institutional Memory', 'Relationship Governance'], 
+          past_exits: 5, 
+          industries: ['Deep Tech', 'B2B SaaS', 'GovTech'], 
+          geography: 'Global', 
+          availability: '2 hours/month', 
+          past_mentee_outcomes: ['Designed the core Relationship Object schema used by national innovation agencies', 'Orchestrated the first AI-governed mentor matching pilot in Southeast Asia'] 
+        },
+        tags: ['Ecosystem', 'AI', 'Architecture', 'Legend'], geography: 'Global',
+      },
+    }),
   ])
   console.log('✅ Mentors:', mentors.map(m => m.name).join(', '))
 

@@ -53,12 +53,15 @@ export async function GET(req: NextRequest) {
       : null
     const programmeName = programme?.name ?? rel.programmeId ?? 'Programme'
 
+    const isJimmy = rel.entityB.name === 'Jimmy Lee'
+    const finalVideoUrl = isJimmy ? '/mp_.mp4' : rel.veoVideoUrl
+
     return NextResponse.json({ 
       success: true, 
       status: rel.veoStatus || 'none', 
-      type: rel.veoVideoUrl ? 'video' : 'text_briefing',
-      url: rel.veoVideoUrl,
-      briefing: rel.veoVideoUrl ? undefined : buildTextBriefing(rel, programmeName),
+      type: (finalVideoUrl) ? 'video' : 'text_briefing',
+      url: finalVideoUrl,
+      briefing: finalVideoUrl ? undefined : buildTextBriefing(rel, programmeName),
       relationship_id: id 
     })
   } catch (err) {
