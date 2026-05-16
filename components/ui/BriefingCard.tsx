@@ -46,7 +46,7 @@ export function BriefingCard({ type, videoUrl, briefing }: BriefingCardProps) {
           {(Object.keys(BRIEFING_LABELS) as (keyof TextBriefing)[]).map((key) => (
             <div key={key} className="px-5 py-3">
               <p className="mb-0.5 text-xs uppercase tracking-wide text-[var(--text-muted)]">{BRIEFING_LABELS[key]}</p>
-              <p className="text-sm font-medium text-[var(--foreground)]">{briefing[key]}</p>
+              <p className="text-sm font-medium text-[var(--foreground)] max-w-2xl">{briefing[key]}</p>
             </div>
           ))}
           {type === 'text_briefing' && (

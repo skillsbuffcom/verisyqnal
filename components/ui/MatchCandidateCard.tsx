@@ -32,23 +32,25 @@ export function MatchCandidateCard({ candidate, state = 'default', onApprove, on
         </div>
       </div>
 
-      <p className="app-muted mb-4 text-sm leading-7">{candidate.rationale}</p>
+      <p className="app-muted mb-4 text-sm leading-7 max-w-2xl">{candidate.rationale}</p>
+      
+      <div className="max-w-2xl">
+        {candidate.alignment_factors.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-1">
+            {candidate.alignment_factors.map((f) => (
+              <span key={f} className="rounded-full bg-[var(--teal-soft)] px-2.5 py-1 text-xs text-[var(--teal-strong)]">{f}</span>
+            ))}
+          </div>
+        )}
 
-      {candidate.alignment_factors.length > 0 && (
-        <div className="mb-3 flex flex-wrap gap-1">
-          {candidate.alignment_factors.map((f) => (
-            <span key={f} className="rounded-full bg-[var(--teal-soft)] px-2.5 py-1 text-xs text-[var(--teal-strong)]">{f}</span>
-          ))}
-        </div>
-      )}
-
-      {candidate.risk_flags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-3">
-          {candidate.risk_flags.map((r) => (
-            <span key={r} className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs text-red-500">{r}</span>
-          ))}
-        </div>
-      )}
+        {candidate.risk_flags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-3">
+            {candidate.risk_flags.map((r) => (
+              <span key={r} className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs text-red-500">{r}</span>
+            ))}
+          </div>
+        )}
+      </div>
 
       {state === 'default' && (
         <div className="flex gap-2 mt-3">

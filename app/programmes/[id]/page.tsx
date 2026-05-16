@@ -300,7 +300,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           )}
 
           {approvedRelationship && (
-            <div className="app-panel mt-4 rounded-[1.75rem] p-4 bg-[#081513]">
+            <div className="app-panel mt-4 rounded-[1.75rem] p-4 bg-[#081513] max-w-2xl">
               <p className="mono text-xs uppercase tracking-[0.28em] text-[var(--teal)] opacity-70">Relationship Object</p>
               <pre className="mono mt-2 max-h-40 overflow-auto text-[10px] leading-5 text-[#c6fff6]">
                 {JSON.stringify(approvedRelationship, null, 2)}
