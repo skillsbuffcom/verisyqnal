@@ -60,20 +60,13 @@ export async function POST(req: NextRequest) {
       : null
     const programmeName = programme?.name ?? rel.programmeId ?? 'Programme'
 
-    if (isDemoModeRequest(req)) {
-      const briefing = buildTextBriefing(rel, programmeName)
-      await prisma.relationship.update({
-        where: { id: relationship_id },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data: { memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], { timestamp: new Date().toISOString(), event: 'demo_briefing_generated', actor: 'system', notes: JSON.stringify(briefing) }] },
-      })
-      return NextResponse.json({ success: true, type: 'text_briefing', briefing, relationship_id, demo_mode: true })
-    }
+    const briefing = buildTextBriefing(rel, programmeName)
 
     const veoEndpoint = process.env.VEO_API_ENDPOINT
     const veoKey = process.env.VEO_API_KEY
 
-    if (veoEndpoint && veoKey) {
+    // If real VEO is configured, try it
+    if (veoEndpoint && veoKey && !isDemoModeRequest(req)) {
       try {
         const prompt = buildVeoPrompt(rel, programmeName)
         const veoRes = await fetch(veoEndpoint, {
@@ -88,23 +81,44 @@ export async function POST(req: NextRequest) {
             await prisma.relationship.update({
               where: { id: relationship_id },
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              data: { memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], { timestamp: new Date().toISOString(), event: 'veo_briefing_generated', actor: 'system', notes: url }] },
+              data: { 
+                veoStatus: 'completed',
+                veoVideoUrl: url,
+                memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], { timestamp: new Date().toISOString(), event: 'veo_briefing_generated', actor: 'system', notes: url }] 
+              },
             })
             return NextResponse.json({ success: true, type: 'video', url, relationship_id })
           }
         }
-      } catch { /* fall through to text briefing */ }
+      } catch (err) {
+        console.error('Veo API Error, falling back to simulation:', err)
+      }
     }
 
-    // Text briefing fallback
-    const briefing = buildTextBriefing(rel, programmeName)
+    // Default: Start simulated generation
     await prisma.relationship.update({
       where: { id: relationship_id },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: { memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], { timestamp: new Date().toISOString(), event: 'text_briefing_generated', actor: 'system', notes: JSON.stringify(briefing) }] },
+      data: {
+        veoStatus: 'processing',
+        memory: [...(Array.isArray(rel.memory) ? rel.memory : []) as any[], { 
+          timestamp: new Date().toISOString(), 
+          event: 'veo_job_started', 
+          actor: 'system',
+          notes: 'Simulated video generation started'
+        }]
+      },
     })
-    return NextResponse.json({ success: true, type: 'text_briefing', briefing, relationship_id })
+
+    return NextResponse.json({ 
+      success: true, 
+      status: 'processing', 
+      type: 'text_briefing', 
+      briefing, 
+      relationship_id 
+    })
+
   } catch (err) {
+    console.error('API Error /api/veo/generate:', err)
     if (err instanceof z.ZodError) {
       return NextResponse.json({ success: false, error: err.issues }, { status: 400 })
     }

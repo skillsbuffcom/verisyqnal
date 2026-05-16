@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
     const entity = await prisma.entity.create({ data: data as any })
     return NextResponse.json({ success: true, entity }, { status: 201 })
   } catch (err) {
+    console.error('API Error /api/entities (POST):', err)
     if (err instanceof z.ZodError) {
       return NextResponse.json({ success: false, error: err.issues }, { status: 400 })
     }

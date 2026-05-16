@@ -39,6 +39,8 @@ model Relationship {
   riskFlags        Json     @default("[]")
   governance       Json?
   memory           Json     @default("[]")
+  veoStatus        String?  @default("none")
+  veoVideoUrl      String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

@@ -210,7 +210,7 @@ function MentorTab() {
         name: form.name,
         bio: form.bio,
         expertise: form.expertise.split(',').map(s => s.trim()).filter(Boolean),
-        past_exits: parseInt(form.past_exits) || 0,
+        past_exits: form.past_exits.trim() === '' ? 0 : (Number(form.past_exits) || 0),
         industries: form.industries.split(',').map(s => s.trim()).filter(Boolean),
         geography: form.geography,
         availability: form.availability,
@@ -230,6 +230,7 @@ function MentorTab() {
       if (data.success) router.push('/entities')
       else setError(data.error)
     } catch (e) {
+      console.error('Mentor Create Error:', e)
       setError(String(e))
     } finally {
       setSaving(false)

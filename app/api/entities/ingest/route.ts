@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, extracted_profile: extracted }, { status: 200 })
   } catch (err) {
+    console.error('API Error /api/entities/ingest:', err)
     return NextResponse.json({ success: false, error: String(err) }, { status: 500 })
   }
 }

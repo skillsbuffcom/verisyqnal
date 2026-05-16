@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, startup_id, programme_id, matches: valid })
   } catch (err) {
+    console.error('API Error /api/match:', err)
     if (err instanceof z.ZodError) {
       return NextResponse.json({ success: false, error: err.issues }, { status: 400 })
     }

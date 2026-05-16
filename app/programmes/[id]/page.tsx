@@ -161,13 +161,39 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           body: JSON.stringify({ relationship_id: data.relationship.id }),
         })
         const veoData = await veoRes.json()
-        if (veoData.success) setVeoResult(veoData)
-        else setPanelError(typeof veoData.error === 'string' ? veoData.error : 'Briefing generation failed.')
-        setVeoLoading(false)
+        
+        if (veoData.success) {
+          if (veoData.status === 'processing') {
+            // Start polling
+            const poll = async () => {
+              const statusRes = await fetch(`/api/veo/status?id=${data.relationship.id}`)
+              const statusData = await statusRes.json()
+              if (statusData.success && statusData.status === 'completed') {
+                setVeoResult({ type: 'video', url: statusData.url })
+                setVeoLoading(false)
+              } else if (statusData.success && statusData.status === 'failed') {
+                setPanelError('Briefing generation failed.')
+                setVeoLoading(false)
+              } else {
+                // Poll again in 2 seconds
+                setTimeout(poll, 2000)
+              }
+            }
+            setVeoResult(veoData) // Show text briefing immediately if available
+            setTimeout(poll, 2000)
+          } else {
+            setVeoResult(veoData)
+            setVeoLoading(false)
+          }
+        } else {
+          setPanelError(typeof veoData.error === 'string' ? veoData.error : 'Briefing generation failed.')
+          setVeoLoading(false)
+        }
       } else {
         setPanelError(typeof data.error === 'string' ? data.error : 'Approval failed.')
       }
-    } catch {
+    } catch (err) {
+      console.error('Match Approval Error:', err)
       setPanelError('Approval or briefing generation failed. Switch on Demo Mode for a deterministic fallback.')
       setVeoLoading(false)
     }
@@ -298,7 +324,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             </div>
           )}
 
-          {veoLoading && <LoadingSpinner label="Generating Veo Match Briefing..." />}
+          {veoLoading && <LoadingSpinner label={veoResult ? "Creating professional video briefing..." : "Generating Veo Match Briefing..."} />}
 
           {veoResult && (
             <div className="mt-6">
